@@ -2,11 +2,11 @@
 !/src
 !/photoShop_images
 !/apktool
+!README.md
 !app.json
 !index.js
 !package.json
 !.gitignore
-!my-release-key.keystore
 
 !/android
 /android/*
@@ -14,5 +14,5 @@
 !/android/gradle.properties
 /android/app/*
 !/android/app/src
-!/android/app/my-release-key.keystore
 !/android/app/build.gradle
+

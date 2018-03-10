@@ -1,4 +1,4 @@
-![](https://github.com/xiek881028/kumaPwd/blob/master/photoShop_images/kuma_icon.png)
+![](https://github.com/xiek881028/kumaPwd/blob/master/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
 
 [![License](https://img.shields.io/aur/license/yaourt.svg)](#)
 

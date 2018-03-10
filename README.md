@@ -1,3 +1,7 @@
+![](https://github.com/xiek881028/kumaPwd/blob/master/photoShop_images/kuma_icon.png)
+
+[![License](https://img.shields.io/aur/license/yaourt.svg)](#)
+
 # kumaPwd
 
 kumaPwd是app账号匣的项目源码。

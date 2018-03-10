@@ -25,7 +25,7 @@ kumaPwd是app账号匣的项目源码。
 - clone项目源码到根目录。
 - 用命令行工具运行yarn（请不要使用npm，在目前的版本中会导致bug）。
 - 如果您也是采用react-native 0.52.0构建的工程，在当前版本有几个已知bug需要您手动处理。
-- - 项目采用的第三方图标库react-native-vector-icons在编译时会报错，需要删除./node_modules/react-native/local-cli/core/__fixtures__/files/package.json。
+- - 项目采用的第三方图标库react-native-vector-icons在编译时会报错，需要删除./node_modules/react-native/local-cli/core/\_\_fixtures\_\_/files/package.json。
 - - 目前的react-native的Modal组件表现有些不完美，需要更改./node_modules/react-native/Libraries/Modal/Modal.js里第217行的“white”为“transparent”。
 - 运行react-native run-android项目即可启动。
 

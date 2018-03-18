@@ -24,6 +24,7 @@ export default class ModalBase extends Component {
 				onRequestClose={()=>{
 					this.setModal(false);
 				}}
+				// transparent={true}
 				visible={this.state.modalIsShow}
 			>
 				<View

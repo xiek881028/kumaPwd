@@ -22,10 +22,12 @@ import {
 	getErrorPwdFlag,
 	getErrorPwdNum,
 	getErrorPwdTime,
+	getFingerprintFlag,
 } from '../assets/appCommonFn';
 
 import ExitAndroid from '../NativeModules/ExitAndroid';
 import BackHoldAndroid from '../NativeModules/BackHoldAndroid';
+import FingerprintAndroid from '../NativeModules/FingerprintAndroid';
 
 //Css
 import style from '../css/common.js';
@@ -45,6 +47,15 @@ class ConfigAdv extends Component {
 		this.props.navigation.goBack();
 		return true;
 	}
+	fingerprint = () => new Promise(function (resolve, reject) {
+		FingerprintAndroid.isReady(data => {
+			if (data.flag) {
+				resolve(true);
+			} else {
+				reject();
+			}
+		});
+	})
 	async componentWillMount() {
 		let readly = await loginState(this.props);
 		let autoBeiVal = await getAutoBeiFlag();
@@ -53,99 +64,51 @@ class ConfigAdv extends Component {
 		let errFlag = await getErrorPwdFlag();
 		let errNum = await getErrorPwdNum();
 		let errTime = await getErrorPwdTime();
-		this.setState({
-			readly,
-			autoBeiVal,
-			backHoldFlag,
-			backHoldTime,
-			errFlag,
-			errNum,
-			errTime,
-		});
-		BackHandler.addEventListener('hardwareBackPress', this.btnGoBack);
-	}
-	componentWillUnmount() {
-		console.log('销毁config');
-		this.props.navigation.state.params && this.props.navigation.state.params.callSetBtn && this.props.navigation.state.params.callSetBtn();
-		BackHandler.removeEventListener('hardwareBackPress', this.btnGoBack);
-	}
-	static navigationOptions = ({ navigation, screenProps }) => ({
-		headerTitle: (() => {
-			return '高级设置';
-		})(),
-		headerLeft: (() => {
-			const { state, goBack } = navigation;
-			return (
-				<TouchableHighlight
-					activeOpacity={0.6}
-					underlayColor='transparent'
-					style={style.headerLeftBtn}
-					onPress={() => {
-						goBack();
-					}}
-				>
-					<Feather
-						name="arrow-left"
-						size={26}
-						color={style.headerTitleIcon.color}
-					/>
-				</TouchableHighlight>
-			);
-		})(),
-	});
-	//倒计时秒速
-	disabledBtnIndex = 5;
-	//防应用初始化多次计时flag
-	resetAppModalFlag = true;
-	disabledBtn(index) {
-		if (index > 0) {
-			this.disabledBtnTimer = setTimeout(() => {
-				this.setState({
-					resetAppBtnText: `确定（${index - 1}）`,
-					resetAppBtnDisabled: true,
-				}, () => {
-					this.disabledBtn(index - 1);
-				});
-			}, 1000);
-		} else {
-			this.setState({
-				resetAppBtnText: `确定`,
-				resetAppBtnDisabled: false,
-			});
+		let fingerprintFlag = await getFingerprintFlag();
+		let hasFingerprint;
+		try {
+			hasFingerprint = await this.fingerprint();
+		} catch (err) {
+			hasFingerprint = false;
 		}
-	}
-	resetApp(_this) {
-		if (!_this.resetAppModalFlag) return;
-		_this.resetAppModalFlag = false;
-		_this.refs.modal.setModal(true);
-		_this.setState({
-			resetAppBtnText: `确定（${_this.disabledBtnIndex}）`,
-			resetAppBtnDisabled: true,
-		}, () => {
-			_this.disabledBtn(_this.disabledBtnIndex);
-		});
-	}
-	lockTimeText = {
-		'0.5': '30分钟',
-		'1': '1小时',
-		'3': '3小时',
-		'6': '6小时',
-		'12': '12小时',
-		'24': '1天',
-	};
-	backHoldTimeText = {
-		'10': '10秒',
-		'30': '30秒',
-		'60': '1分钟',
-		'180': '3分钟',
-		'300': '5分钟',
-		'600': '10分钟',
-	};
-	lockTimeArr = ['0.5', '1', '3', '6', '12', '24'];
-	lockNumArr = [3, 5, 10, 30, 50];
-	backHoldTimeArr = [10, 30, 60, 180, 300, 600];
-	render() {
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		BackHandler.addEventListener('hardwareBackPress', this.btnGoBack);
+		let fingerprintFn = {
+			key: '', data: [
+				{
+					children: () => {
+						return (
+							<View>
+								<View style={[styles.box]}>
+									<Text
+										style={[styles.item, { fontSize: this.props.baseFontSize }]}
+										numberOfLines={1}
+									>
+										指纹登录
+									</Text>
+									<Switch
+										style={styles.autoBeiSwitch}
+										thumbTintColor={style.btnBg.backgroundColor}
+										tintColor={style.btnSubDisabledBg.backgroundColor}
+										onTintColor={style.btnDisabledBg.backgroundColor}
+										value={this.state.fingerprintFlag}
+										onValueChange={async newVal => {
+											storage.save({
+												key: 'fingerprintFlag',
+												data: newVal,
+											}).then(() => {
+												this.setState({
+													fingerprintFlag: newVal,
+												});
+											});
+										}}
+									/>
+								</View>
+							</View>
+						);
+					}, disabledOnPress: true,
+				},
+			]
+		};
 		let sections = [
 			{
 				key: '', data: [
@@ -166,7 +129,7 @@ class ConfigAdv extends Component {
 											tintColor={style.btnSubDisabledBg.backgroundColor}
 											onTintColor={style.btnDisabledBg.backgroundColor}
 											value={this.state.autoBeiVal}
-											onValueChange={async (newVal) => {
+											onValueChange={async newVal => {
 												if (newVal) {
 													let canRead = false;
 													let canWrite = false;
@@ -228,7 +191,7 @@ class ConfigAdv extends Component {
 												tintColor={style.btnSubDisabledBg.backgroundColor}
 												onTintColor={style.btnDisabledBg.backgroundColor}
 												value={this.state.backHoldFlag}
-												onValueChange={(newVal) => {
+												onValueChange={newVal => {
 													storage.save({
 														key: 'backHoldFlag',
 														data: newVal,
@@ -405,6 +368,110 @@ class ConfigAdv extends Component {
 				]
 			},
 		];
+		if(hasFingerprint){
+			sections.unshift(fingerprintFn);
+		}
+		this.setState({
+			readly,
+			autoBeiVal,
+			backHoldFlag,
+			backHoldTime,
+			errFlag,
+			errNum,
+			errTime,
+			fingerprintFlag,
+			sections,
+		});
+	}
+	componentWillUnmount() {
+		console.log('销毁config');
+		this.props.navigation.state.params && this.props.navigation.state.params.callSetBtn && this.props.navigation.state.params.callSetBtn();
+		BackHandler.removeEventListener('hardwareBackPress', this.btnGoBack);
+	}
+	static navigationOptions = ({ navigation, screenProps }) => ({
+		headerTitle: (() => {
+			return '高级设置';
+		})(),
+		headerLeft: (() => {
+			const { state, goBack } = navigation;
+			return (
+				<TouchableHighlight
+					activeOpacity={0.6}
+					underlayColor='transparent'
+					style={style.headerLeftBtn}
+					onPress={() => {
+						goBack();
+					}}
+				>
+					<Feather
+						name="arrow-left"
+						size={26}
+						color={style.headerTitleIcon.color}
+					/>
+				</TouchableHighlight>
+			);
+		})(),
+		// headerTitleStyle: {
+		// 	// borderWidth: 1,
+		// 	marginLeft: 0,
+		// 	paddingLeft: 0,
+		// 	fontWeight: '100',
+		// 	fontFamily: 'monospace',
+		// },
+	});
+	//倒计时秒速
+	disabledBtnIndex = 5;
+	//防应用初始化多次计时flag
+	resetAppModalFlag = true;
+	disabledBtn(index) {
+		if (index > 0) {
+			this.disabledBtnTimer = setTimeout(() => {
+				this.setState({
+					resetAppBtnText: `确定（${index - 1}）`,
+					resetAppBtnDisabled: true,
+				}, () => {
+					this.disabledBtn(index - 1);
+				});
+			}, 1000);
+		} else {
+			this.setState({
+				resetAppBtnText: `确定`,
+				resetAppBtnDisabled: false,
+			});
+		}
+	}
+	resetApp(_this) {
+		if (!_this.resetAppModalFlag) return;
+		_this.resetAppModalFlag = false;
+		_this.refs.modal.setModal(true);
+		_this.setState({
+			resetAppBtnText: `确定（${_this.disabledBtnIndex}）`,
+			resetAppBtnDisabled: true,
+		}, () => {
+			_this.disabledBtn(_this.disabledBtnIndex);
+		});
+	}
+	lockTimeText = {
+		'0.5': '30分钟',
+		'1': '1小时',
+		'3': '3小时',
+		'6': '6小时',
+		'12': '12小时',
+		'24': '1天',
+	};
+	backHoldTimeText = {
+		'10': '10秒',
+		'30': '30秒',
+		'60': '1分钟',
+		'180': '3分钟',
+		'300': '5分钟',
+		'600': '10分钟',
+	};
+	lockTimeArr = ['0.5', '1', '3', '6', '12', '24'];
+	lockNumArr = [3, 5, 10, 30, 50];
+	backHoldTimeArr = [10, 30, 60, 180, 300, 600];
+	render() {
+		if (this.props.baseFontSize == null || !this.state.readly) return null;
 		return (
 			<View style={style.container}>
 				<View>
@@ -450,7 +517,7 @@ class ConfigAdv extends Component {
 						keyExtractor={(item, index) => {
 							return index;
 						}}
-						sections={sections}
+						sections={this.state.sections}
 						getItemLayout={(data, index) => {
 							return ({
 								length: 50,
@@ -729,7 +796,7 @@ class ConfigAdv extends Component {
 				<ModalBase
 					ref='getPermission'
 					visible={false}
-					cloesModal={()=>{
+					cloesModal={() => {
 						this.setState({
 							hasPermission: null,
 						});

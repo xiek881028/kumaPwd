@@ -16,12 +16,27 @@ import ListScrollFather from './ListScrollFather';
 //Css
 import style from '../css/common.js';
 
+// let doubleClick = false;//用于修复两次快速点击弹窗会打开两次的bug
+
 class ListItem extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
 		this.state.detailsDoubleClick = false;
+		// this.state.modalIsShow = false;
 	}
+	// touchItem() {
+	// 	!doubleClick && this.setState({
+	// 		modalIsShow: true,
+	// 	});
+	// 	doubleClick = true;
+	// }
+	// changeShow(modalIsShow) {
+	// 	doubleClick = modalIsShow;
+	// 	this.setState({
+	// 		modalIsShow: modalIsShow,
+	// 	});
+	// }
 	_isMounted = false;
 	callSetBtn() {
 		this.props.callSetBtn && this.props.callSetBtn();
@@ -62,6 +77,7 @@ class ListItem extends Component {
 	render() {
 		return (
 			<TouchableHighlight
+				// onPress={this.touchItem.bind(this)}
 				onPress={() => {
 					Keyboard.dismiss();
 					!this.state.detailsDoubleClick && this.props.navigation.navigate('details', {
@@ -80,6 +96,10 @@ class ListItem extends Component {
 						this.renderSearch(this.props.item.account, { style: [styles.account, { fontSize: this.props.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)
 						: null
 					}
+					{/* <Feather
+						name='chevron-right'
+						style={[styles.icon, {fontSize: this.props.baseFontSize}]}
+					/> */}
 				</View>
 			</TouchableHighlight>
 		);
@@ -156,6 +176,62 @@ export default class List extends Component {
 	componentDidMount() {
 		this.mathOffsetArray();
 	}
+	// mathHeight(e) {
+	// 	let winHeight = Dimensions.get('window').height;
+	// 	let winWidth = Dimensions.get('window').width;
+	// 	if(this.state.catchShu && this.state.catchHeng){
+	// 		// console.log('有横有竖');
+	// 		if(this.state._winHeight != winHeight){
+	// 			this.setState({
+	// 				layoutHeight: winHeight > winWidth? this.state.catchShu : this.state.catchHeng,
+	// 				_winHeight: winHeight,
+	// 			});
+	// 		}
+	// 	}else if(this.state.catchShu){
+	// 		// console.log('有竖');
+	// 		if(e.nativeEvent.layout.height != this.state.catchShu){
+	// 			this.setState({
+	// 				catchHeng: e.nativeEvent.layout.height,
+	// 				layoutHeight: e.nativeEvent.layout.height,
+	// 				_winHeight: winHeight,
+	// 			});
+	// 		}
+	// 	}else if(this.state.catchHeng){
+	// 		// console.log('有横');
+	// 		if(this.state._winHeight != winHeight && e.nativeEvent.layout.height == this.state.catchHeng){
+	// 			this.setState({
+	// 				layoutHeight: winHeight,
+	// 			});
+	// 		}else{
+	// 			if(e.nativeEvent.layout.height != this.state.catchHeng && e.nativeEvent.layout.height != winHeight){
+	// 				this.setState({
+	// 					layoutHeight: e.nativeEvent.layout.height,
+	// 					catchShu: e.nativeEvent.layout.height,
+	// 				});
+	// 			}
+	// 		}
+	// 	}else{
+	// 		//首次竖屏加载
+	// 		if(winHeight > winWidth && e.nativeEvent.layout.height != winHeight){
+	// 			let height = e.nativeEvent.layout.height;
+	// 			this.setState({
+	// 				catchShu: height,
+	// 				layoutHeight: height,
+	// 				_winHeight: winHeight,
+	// 			});
+	// 		}
+	// 		//首次横屏加载
+	// 		if(winHeight < winWidth && e.nativeEvent.layout.height != winHeight){
+	// 			let height = e.nativeEvent.layout.height;
+	// 			this.setState({
+	// 				catchHeng: height,
+	// 				layoutHeight: height,
+	// 				_winHeight: winHeight,
+	// 			});
+	// 		}
+	// 	};
+	// 	this.overMath = true;
+	// }
 	Listempty() {
 		if (!!this.props.isSearch) {
 			if (this.props.isSearchEmpty) {
@@ -251,11 +327,13 @@ export default class List extends Component {
 const styles = StyleSheet.create({
 	box: {
 		flexDirection: 'row',
+		// justifyContent: 'space-around',
 		height: 60,
 		backgroundColor: '#fff',
 	},
 	item: {
 		textAlignVertical: 'center',
+		// borderWidth: 1,
 		width: 120,
 		paddingLeft: 15,
 		color: '#353535',
@@ -266,11 +344,18 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20,
 		width: 200,
 	},
+	// icon: {
+	// 	textAlignVertical: 'center',
+	// 	paddingRight: 25,
+	// 	paddingLeft: 10,
+	// 	color: '#ccc',
+	// },
 	headBox: {
 		backgroundColor: '#ebebeb',
 	},
 	headItem: {
 		textAlignVertical: 'center',
+		// borderWidth: 1,
 		height: 24,
 		paddingHorizontal: 15,
 		color: '#888',

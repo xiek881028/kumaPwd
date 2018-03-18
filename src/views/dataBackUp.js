@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 
 import {
 	loginState,
-	getDataPwd,
+	getPwd,
 	getTimerFileName,
 } from '../assets/appCommonFn';
 import File from '../components/FilesTree';
@@ -95,6 +95,13 @@ class dataBackUp extends Component {
 				</TouchableHighlight>
 			);
 		})(),
+		// headerTitleStyle: {
+		// 	// borderWidth: 1,
+		// 	marginLeft: 0,
+		// 	paddingLeft: 0,
+		// 	fontWeight: '100',
+		// 	fontFamily: 'monospace',
+		// },
 	});
 	isRoot(bool) {
 		this.setState({
@@ -275,7 +282,7 @@ class dataBackUp extends Component {
 								onPress={() => {
 									let _file = this.refs.file;
 									storage.getAllDataForKey('accountList').then(accounts => {
-										FilesAndroid.writeFile(_file.state.path, `/${getTimerFileName()}.kuma`, CryptoJS.AES.encrypt(JSON.stringify(accounts), getDataPwd()).toString(), true, d => {
+										FilesAndroid.writeFile(_file.state.path, `/${getTimerFileName()}.kuma`, CryptoJS.AES.encrypt(JSON.stringify(accounts), getPwd()).toString(), true, d => {
 											if (d.flag) {
 												_file.getFileTree(_file.state.path);
 												this.setState({
@@ -567,6 +574,7 @@ const styles = StyleSheet.create({
 	},
 	modalBtnBox: {
 		justifyContent: 'center',
+		// alignItems: 'center',
 		paddingHorizontal: 10,
 		paddingVertical: 12,
 		borderTopWidth: 1,

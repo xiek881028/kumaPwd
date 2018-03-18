@@ -7,25 +7,20 @@ import FilesAndroid from '../NativeModules/FilesAndroid';
 import BackHoldAndroid from '../NativeModules/BackHoldAndroid';
 
 let isLogin = false;
-let loginSavePwd = '';
-let dataSavePwd = '';
+let savePwd = '';
 let firstInit = true;
 
-function mathLoginPwd(str) {
+function mathPwd(str) {
 	//对用户输入的登录密码进行加密保存
 	//因涉及安全性 加密代码不予展示 请自行实现
 	return str;
 }
 
-function mathDataPwd(str) {
-	//对用户输入的登录密码进行另一种加密作为数据加密时的key
-	//因涉及安全性 加密代码不予展示 请自行实现
-	return str;
-}
-
 function loginState(props, freePage = false) {
-	return new Promise(function loginState(resolve) {
-		firstInit && init(props);
+	return new Promise(async function loginState(resolve) {
+		if(firstInit){
+			await init(props);
+		}
 		if (!(freePage || isLogin)) {
 			props.navigation.navigate('login');
 			resolve(false);
@@ -35,6 +30,10 @@ function loginState(props, freePage = false) {
 }
 
 const init = async props => {
+	try{
+		savePwd = await storage.load({ key: 'Password' });
+	}catch(err){
+	}
 	fontInit(props);
 	mkdirInit();
 	//进行后台留存设置task
@@ -131,35 +130,34 @@ const fontInit = props => new Promise(function (resolve) {
 		;
 });
 
-function addLoginPwd(pwd) {
+function addPwd(pwd) {
 	storage.save({
-		key: 'loginPwd',
-		data: mathLoginPwd(pwd),
+		key: 'Password',
+		data: mathPwd(pwd),
 	});
-	dataSavePwd = mathDataPwd(pwd);
+	savePwd = mathPwd(pwd);
 	isLogin = true;
 }
 
-function setLoginPwd(pwd) {
-	loginSavePwd = pwd;
-}
-
-function getDataPwd(pwd) {
+function getPwd(pwd) {
 	if (pwd) {
-		return mathDataPwd(pwd);
+		return mathPwd(pwd);
 	} else {
-		return dataSavePwd;
+		return savePwd;
 	}
 }
 
 function tryLogin(pwd) {
-	if (mathLoginPwd(pwd) === loginSavePwd) {
-		dataSavePwd = mathDataPwd(pwd);
+	if (mathPwd(pwd) === savePwd) {
 		isLogin = true;
 		return true;
 	} else {
 		return false;
 	}
+}
+
+function setLoginState(bool=false){
+	isLogin = bool;
 }
 
 function _constructor(key, defaultVal) {
@@ -205,12 +203,13 @@ const getErrorPwdFlag = _constructor('errorPwdFlag', true);
 const getErrorPwdNum = _constructor('errorPwdNum', 10);
 //密码错误锁定时间
 const getErrorPwdTime = _constructor('errorPwdTime', `${1000 * 60 * 60}`);
+//指纹识别flag
+const getFingerprintFlag = _constructor('fingerprintFlag', true);
 
 module.exports = {
 	loginState,
-	addLoginPwd,
-	setLoginPwd,
-	getDataPwd,
+	addPwd,
+	getPwd,
 	tryLogin,
 	mkdirInit,
 	fileIsExists,
@@ -222,4 +221,6 @@ module.exports = {
 	getErrorPwdNum,
 	getErrorPwdTime,
 	getTimerFileName,
+	getFingerprintFlag,
+	setLoginState,
 }

@@ -8,6 +8,8 @@ import {
 	TouchableHighlight,
 	ScrollView,
 	PermissionsAndroid,
+	DeviceEventEmitter,
+	AppState,
 } from 'react-native';
 import { connect } from 'react-redux';
 import {
@@ -16,10 +18,9 @@ import {
 } from '../actions';
 import {
 	loginState,
-	addLoginPwd,
-	setLoginPwd,
+	addPwd,
 	tryLogin,
-	getDataPwd,
+	getPwd,
 	getPwdErr,
 	getErrorPwdFlag,
 	getErrorPwdNum,
@@ -27,12 +28,17 @@ import {
 	mkdirInit,
 	getTimerFileName,
 	fileIsExists,
+	getFingerprintFlag,
+	setLoginState,
+	getFirst,
 } from '../assets/appCommonFn';
 
 import FilesAndroid from '../NativeModules/FilesAndroid';
 import ShareAndroid from '../NativeModules/ShareAndroid';
+import FingerprintAndroid from '../NativeModules/FingerprintAndroid';
 
 import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import ModalBase from '../components/ModalBase';
 
@@ -113,7 +119,6 @@ class Login extends Component {
 			readly: false,
 		};
 	}
-	//适当加入延时 获得更好的视觉体验
 	delayKeylock = 50;
 	delayInput = 50;
 	delayHref = 200;
@@ -131,7 +136,79 @@ class Login extends Component {
 	}
 	pwdMaxTry;
 	errPwdFlag;
-	async componentWillMount() {
+	fingerprintOnOff = false;
+	fingerprint = () => {
+		let _this = this;
+		if (!this.fingerprintOnOff) {
+			FingerprintAndroid.cancel();
+			FingerprintAndroid.toVerification();
+			this.fingerprintOnOff = true;
+		}
+		AppState.addEventListener('change', this._handleAppStateChange);
+		return new Promise(function (resolve, reject) {
+			FingerprintAndroid.isReady(data => {
+				if (data.flag) {
+					// 验证成功
+					DeviceEventEmitter.addListener('onSucceed', function () {
+						setLoginState(true);
+						_this.loginSuccess();
+					});
+					// 指纹不匹配，并返回可用剩余次数并自动继续验证
+					DeviceEventEmitter.addListener('onNotMatch', function (data) {
+						_this.setState({
+							titleText: '指纹错误，请重新验证',
+							titleTextMode: 'error',
+						});
+					});
+					// 错误次数达到上限或者API报错停止了验证
+					DeviceEventEmitter.addListener('onFailed', function (data) {
+						_this.setState({
+							titleText: '请输入密码',
+							titleSubText: `指纹验证连续错误次数过多，指纹识别已被系统暂时锁定`,
+							titleTextMode: 'info',
+						});
+					});
+					// 第一次调用startIdentify失败，因为设备被暂时锁定
+					DeviceEventEmitter.addListener('onStartFailedByDeviceLocked', function () {
+						_this.setState({
+							titleText: '请输入密码',
+							titleSubText: `指纹验证连续错误次数过多，指纹识别已被系统暂时锁定`,
+							titleTextMode: 'info',
+						});
+					});
+					resolve(true);
+				} else {
+					reject();
+				}
+			});
+		});
+	}
+	_handleAppStateChange = (_state) => {
+		//开启关闭指纹验证
+		let { state } = this.props.navigation;
+		//login
+		if (state.params == undefined) {
+			if (_state != 'active') {
+				FingerprintAndroid.cancel();
+				this.fingerprintOnOff = false;
+			} else {
+				if (!this.fingerprintOnOff) {
+					FingerprintAndroid.cancel();
+					FingerprintAndroid.toVerification();
+					this.fingerprintOnOff = true;
+				}
+			}
+		}
+	}
+	async componentDidMount() {
+		// storage.remove({
+		// 	key: 'saveErrorPwdTime',
+		// }).then(() => {
+		// 	storage.save({
+		// 		key: 'saveErrorPwdNum',
+		// 		data: 0,
+		// 	});
+		// });
 		let readly = await loginState(this.props, true);
 		let { state } = this.props.navigation;
 		if (state.params && (state.params._mode == 'importCover' || state.params._mode == 'importAppend')) {
@@ -147,8 +224,9 @@ class Login extends Component {
 			this.appLockTime = await getErrorPwdTime();
 			this.pwdMaxTry = await getErrorPwdNum();
 			try {
+				await storage.load({ key: 'Password' });
 				this.errPwdFlag = await getErrorPwdFlag();
-				let data = await storage.load({ key: 'loginPwd' });
+				let isLogin = state.params && state.params._mode ? false : true;
 				let errPwdIndex;
 				let saveErrorPwdTime;
 				if (this.errPwdFlag) {
@@ -156,15 +234,29 @@ class Login extends Component {
 					errPwdIndex = pwdErr.errPwdIndex;
 					saveErrorPwdTime = pwdErr.saveErrorPwdTime;
 				}
+				//没开启密码锁定功能
 				if (!this.errPwdFlag || errPwdIndex < this.pwdMaxTry) {
-					setLoginPwd(data);
+					let hasFingerprint;
+					let fingerprintState;
+					if (isLogin) {
+						fingerprintState = await getFingerprintFlag();
+						if (fingerprintState) {
+							try {
+								hasFingerprint = await this.fingerprint();
+							} catch (err) {
+								hasFingerprint = false;
+							}
+						}
+					}
 					this.setState({
 						readly,
 						mode: (state.params && state.params._mode) && state.params._mode || 'login',
-						titleText: '请输入密码',
+						titleText: `${isLogin && fingerprintState && hasFingerprint ? `请验证指纹或输入密码` : `请输入密码`}`,
+						canFingerprint: isLogin && fingerprintState && hasFingerprint,
 					});
 				} else {
 					let { unlock, timerStr } = await this.mathUnlockTime(saveErrorPwdTime);
+					//开启密码锁定功能 未达到错误次数
 					if (unlock) {
 						storage.remove({
 							key: 'saveErrorPwdTime',
@@ -172,16 +264,29 @@ class Login extends Component {
 							storage.save({
 								key: 'saveErrorPwdNum',
 								data: 0,
-							}).then(() => {
-								setLoginPwd(data);
+							}).then(async () => {
+								let hasFingerprint;
+								let fingerprintState;
+								if (isLogin) {
+									fingerprintState = await getFingerprintFlag();
+									if (fingerprintState) {
+										try {
+											hasFingerprint = await this.fingerprint();
+										} catch (err) {
+											hasFingerprint = false;
+										}
+									}
+								}
 								this.setState({
 									readly,
 									mode: (state.params && state.params._mode) && state.params._mode || 'login',
-									titleText: '请输入密码',
+									titleText: `${isLogin && fingerprintState && hasFingerprint ? `请验证指纹或输入密码` : `请输入密码`}`,
+									canFingerprint: isLogin && fingerprintState && hasFingerprint,
 								});
 							});
 						});
 					} else {
+						this.state.canFingerprint && this.offFingerprint();
 						this.setState({
 							readly,
 							mode: (state.params && state.params._mode) && state.params._mode || 'login',
@@ -194,6 +299,7 @@ class Login extends Component {
 					}
 				}
 			} catch (err) {
+				console.log(err);
 				this.setState({
 					readly,
 					mode: 'register',
@@ -216,8 +322,18 @@ class Login extends Component {
 			timerStr,
 		};
 	}
+	offFingerprint() {
+		this.fingerprintOnOff = false;
+		FingerprintAndroid.cancel();
+		AppState.removeEventListener('change', this._handleAppStateChange);
+		DeviceEventEmitter.removeAllListeners('onSucceed');
+		DeviceEventEmitter.removeAllListeners('onNotMatch');
+		DeviceEventEmitter.removeAllListeners('onFailed');
+		DeviceEventEmitter.removeAllListeners('onStartFailedByDeviceLocked');
+	}
 	componentWillUnmount() {
 		console.log('销毁login');
+		this.offFingerprint();
 		this.passFlag = false;
 		this.props.navigation.state.params && this.props.navigation.state.params.callSetBtn && this.props.navigation.state.params.callSetBtn();
 		BackHandler.removeEventListener('hardwareBackPress', this.btnGoBack);
@@ -225,6 +341,27 @@ class Login extends Component {
 	static navigationOptions = ({ navigation, screenProps }) => ({
 		header: null,
 	});
+	loginSuccess = () => {
+		this.setState({
+			titleText: '登录成功',
+			titleTextMode: 'success',
+			titleSubText: '',
+		}, () => {
+			storage.remove({
+				key: 'saveErrorPwdTime',
+			}).then(() => {
+				storage.save({
+					key: 'saveErrorPwdNum',
+					data: 0,
+				}).then(() => {
+					setTimeout(() => {
+						// this.props.navigation.replace('helpFirst', {_mode: 'first'});
+						this.props.navigation.replace('home');
+					}, this.delayHref);
+				});
+			});
+		});
+	}
 	setPwd(_pwd, fn = () => { }) {
 		if (!this.state.secondPwd) {
 			this.setState({
@@ -235,7 +372,7 @@ class Login extends Component {
 			});
 		} else {
 			if (this.state.secondPwd.join('') === _pwd.join('')) {
-				addLoginPwd(this.state.secondPwd.join(''));
+				addPwd(this.state.secondPwd.join(''));
 				fn();
 			} else {
 				this.setState({
@@ -296,25 +433,7 @@ class Login extends Component {
 			}, () => {
 				setTimeout(async () => {
 					if (tryLogin(_pwd.join(''))) {
-						this.setState({
-							titleText: '登录成功',
-							titleTextMode: 'success',
-							titleSubText: '',
-						}, () => {
-							storage.remove({
-								key: 'saveErrorPwdTime',
-							}).then(() => {
-								storage.save({
-									key: 'saveErrorPwdNum',
-									data: 0,
-								}).then(() => {
-									setTimeout(() => {
-										// this.props.navigation.replace('helpFirst', {_mode: 'first'});
-										this.props.navigation.replace('home');
-									}, this.delayHref);
-								});
-							});
-						});
+						this.loginSuccess();
 					} else {
 						let errPwdIndex;
 						if (this.errPwdFlag) {
@@ -344,6 +463,7 @@ class Login extends Component {
 						} else {
 							let { saveErrorPwdTime } = await getPwdErr();
 							let { unlock, timerStr } = await this.mathUnlockTime(saveErrorPwdTime);
+							this.state.canFingerprint && this.offFingerprint();
 							this.setState({
 								pwd: [],
 								keylock: true,
@@ -363,14 +483,14 @@ class Login extends Component {
 			}, () => {
 				setTimeout(async () => {
 					if (this.passFlag) {
-						let prevDataPwd = getDataPwd();
+						let prevDataPwd = getPwd();
 						this.setPwd(_pwd, () => {
 							this.setState({
 								titleText: '密码设置成功',
 								titleTextMode: 'success',
 								titleSubText: '正在用新密码对账号重新加密，请勿操作，否则您将有可能失去您所有的账号！',
 							}, () => {
-								let nowDataPwd = getDataPwd();
+								let nowDataPwd = getPwd();
 								this.passFlag = false;
 								storage.getAllDataForKey('accountList').then(accounts => {
 									accounts.map((item) => {
@@ -464,7 +584,7 @@ class Login extends Component {
 				keylock: true,
 			}, () => {
 				setTimeout(() => {
-					let dataPwd = getDataPwd(_pwd.join(''));
+					let dataPwd = getPwd(_pwd.join(''));
 					let dataList = "";
 					try {
 						dataList = CryptoJS.AES.decrypt(this.state.importData, dataPwd).toString(CryptoJS.enc.Utf8);
@@ -513,7 +633,9 @@ class Login extends Component {
 			});
 		} else {
 			let titleText = '';
-			if (this.state.mode == 'login' || this.state.mode == 'importCover' || this.state.mode == 'importAppend') {
+			if (this.state.mode == 'login') {
+				titleText = this.state.canFingerprint ? `请验证指纹或输入密码` : `请输入密码`;
+			} else if (this.state.mode == 'importCover' || this.state.mode == 'importAppend') {
 				titleText = '请输入密码'
 			} else if (this.state.mode == 'register') {
 				if (this.state.secondPwd) {
@@ -561,7 +683,7 @@ class Login extends Component {
 			decryptPwd = "";
 		}
 		if (decryptPwd.length) {
-			let nowDataPwd = getDataPwd();
+			let nowDataPwd = getPwd();
 			newEncryptPwd = CryptoJS.AES.encrypt(decryptPwd, nowDataPwd).toString();
 		}
 		newData[index].pwd = newEncryptPwd;
@@ -611,41 +733,23 @@ class Login extends Component {
 					:
 					<View style={[style.absoluteBox, styles.loginBox]}>
 						<View style={styles.topHalfBox}>
-							<Text style={[styles.titleText, this.state.titleTextMode == 'success' ? styles.titleTextSuccess : this.state.titleTextMode == 'error' ? styles.titleTextErr : '', { fontSize: this.props.baseFontSize * 1.25 }]}>
-								{this.state.titleText}
-							</Text>
-							<InputPwd
-								style={styles.inputPwd}
-								number={6}
-								pwd={this.state.pwd}
-							/>
-							{
-								this.state.mode == 'register' ?
-									<View style={styles.forgotPwd}>
-										<TouchableHighlight
-											activeOpacity={0.6}
-											underlayColor='transparent'
-											onPress={() => {
-												this.refs.importModal.setModal(true);
-											}}
-										>
-											<View style={styles.forgotPwdBox}>
-												<Feather
-													name='help-circle'
-													style={[styles.forgotPwdIcon, { fontSize: this.props.baseFontSize * 1.125 }]}
-												/>
-												<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>我有备份文件</Text>
-											</View>
-										</TouchableHighlight>
-									</View>
-									:
-									this.state.mode == 'login' ?
+							<View style={styles.topHalf}>
+								<Text style={[styles.titleText, this.state.titleTextMode == 'success' ? styles.titleTextSuccess : this.state.titleTextMode == 'error' ? styles.titleTextErr : '', { fontSize: this.props.baseFontSize * 1.25 }]}>
+									{this.state.titleText}
+								</Text>
+								<InputPwd
+									style={styles.inputPwd}
+									number={6}
+									pwd={this.state.pwd}
+								/>
+								{
+									this.state.mode == 'register' ?
 										<View style={styles.forgotPwd}>
 											<TouchableHighlight
 												activeOpacity={0.6}
 												underlayColor='transparent'
 												onPress={() => {
-													this.refs.forgotModal.setModal(true);
+													this.refs.importModal.setModal(true);
 												}}
 											>
 												<View style={styles.forgotPwdBox}>
@@ -653,16 +757,53 @@ class Login extends Component {
 														name='help-circle'
 														style={[styles.forgotPwdIcon, { fontSize: this.props.baseFontSize * 1.125 }]}
 													/>
-													<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>忘记密码</Text>
+													<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>我有备份文件</Text>
 												</View>
 											</TouchableHighlight>
 										</View>
+										:
+										this.state.mode == 'login' ?
+											<View style={styles.forgotPwd}>
+												<TouchableHighlight
+													activeOpacity={0.6}
+													underlayColor='transparent'
+													onPress={() => {
+														this.refs.forgotModal.setModal(true);
+													}}
+												>
+													<View style={styles.forgotPwdBox}>
+														<Feather
+															name='help-circle'
+															style={[styles.forgotPwdIcon, { fontSize: this.props.baseFontSize * 1.125 }]}
+														/>
+														<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>忘记密码</Text>
+													</View>
+												</TouchableHighlight>
+											</View>
+											: null
+								}
+								{
+									this.state.titleSubText ?
+										<Text style={[styles.titleSubText, this.state.titleSubTextMode == 'success' ? styles.titleTextSuccess : '', { fontSize: this.props.baseFontSize }]}>{this.state.titleSubText}</Text>
 										: null
-							}
+								}
+							</View>
 							{
-								this.state.titleSubText ?
-									<Text style={[styles.titleSubText, this.state.titleSubTextMode == 'success' ? styles.titleTextSuccess : '', { fontSize: this.props.baseFontSize }]}>{this.state.titleSubText}</Text>
-									: null
+								this.state.canFingerprint?
+									<View
+										style={[styles.fingerprintBox]}
+									>
+										<Entypo
+											name='fingerprint'
+											style={styles.fingerprintIcon}
+										/>
+										<Text
+											style={{ fontSize: this.props.baseFontSize }}
+										>
+											指纹识别已开启
+										</Text>
+									</View>
+									:null
 							}
 						</View>
 						<InputKeyboard
@@ -703,7 +844,7 @@ class Login extends Component {
 							<ModalBase
 								ref='forgotModal'
 								visible={false}
-								cloesModal={()=>{
+								cloesModal={() => {
 									this.setState({
 										hasPermission: null,
 									});
@@ -808,11 +949,11 @@ class Login extends Component {
 																	PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
 																	PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
 																]);
-																if(permission['android.permission.READ_EXTERNAL_STORAGE'] == 'denied' || permission['android.permission.WRITE_EXTERNAL_STORAGE'] == 'denied'){
+																if (permission['android.permission.READ_EXTERNAL_STORAGE'] == 'denied' || permission['android.permission.WRITE_EXTERNAL_STORAGE'] == 'denied') {
 																	this.setState({
 																		hasPermission: false,
 																	});
-																}else{
+																} else {
 																	this.exportList();
 																}
 															}
@@ -847,7 +988,21 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 	},
 	topHalfBox: {
+		height: '50%',
 		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	topHalf: {
+		alignItems: 'center',
+	},
+	fingerprintBox: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginBottom: 5,
+	},
+	fingerprintIcon: {
+		fontSize: 24,
+		marginRight: 5,
 	},
 	forgotPwd: {
 		marginTop: 8,

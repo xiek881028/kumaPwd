@@ -16,7 +16,7 @@ import {
 } from '../actions';
 import {
 	loginState,
-	getDataPwd,
+	getPwd,
 } from '../assets/appCommonFn';
 
 //生成唯一id uuid
@@ -45,7 +45,7 @@ class AddAconut extends Component {
 		this.defaultId = state.params.data ? state.params.data.id : '';
 		this.defaultName = state.params.data ? state.params.data.name : '';
 		this.defaultAccount = state.params.data ? state.params.data.account : '';
-		this.defaultPwd = state.params.data ? CryptoJS.AES.decrypt(state.params.data.pwd, getDataPwd()).toString(CryptoJS.enc.Utf8) : '';
+		this.defaultPwd = state.params.data ? CryptoJS.AES.decrypt(state.params.data.pwd, getPwd()).toString(CryptoJS.enc.Utf8) : '';
 		_this = this;
 	}
 	async componentWillMount() {
@@ -108,6 +108,24 @@ class AddAconut extends Component {
 			);
 		})(),
 	});
+	// renderItem(item, index) {
+	// 	return (
+	// 		<View style={styles.moreGroup} key={index}>
+	// 			<View style={styles.moreGroupName}>
+	// 				<InputView
+	// 					maxLength={30}
+	// 					placeholder='点击输入名称，例如备注、手机号、邮箱'
+	// 				/>
+	// 			</View>
+	// 			<View style={styles.moreGroupVal}>
+	// 				<InputView
+	// 					maxLength={30}
+	// 					placeholder='点击输入自定义值'
+	// 				/>
+	// 			</View>
+	// 		</View>
+	// 	);
+	// }
 	save() {
 		let { goBack, setParams, state } = this.props.navigation;
 		setParams({
@@ -116,7 +134,7 @@ class AddAconut extends Component {
 		let data = {
 			name: this._name,
 			account: this._account,
-			pwd: this._pwd === '' ? '' : CryptoJS.AES.encrypt(this._pwd, getDataPwd()).toString(),
+			pwd: this._pwd === '' ? '' : CryptoJS.AES.encrypt(this._pwd, getPwd()).toString(),
 			pinyin: PinYin(this._name),
 			id: this.defaultId.length ? this.defaultId : uuid(),
 		};
@@ -132,6 +150,12 @@ class AddAconut extends Component {
 		});
 		goBack();
 	}
+	// addItem() {
+	// 	this.state.moreList.push('1');
+	// 	this.setState({
+	// 		moreList: this.state.moreList,
+	// 	});
+	// }
 	getText(name, val) {
 		switch (name) {
 			case 'name':
@@ -209,6 +233,26 @@ class AddAconut extends Component {
 							/>
 						</View>
 					</View>
+					{/* {this.state.moreList.length ?
+						<View>
+							<View style={styles.groupTitle}>
+								<Text>自定义添加项</Text>
+							</View>
+							<View>
+								{this.state.moreList.map((item, index)=>{
+									return this.renderItem(item, index);
+								})}
+							</View>
+						</View>
+						: null
+					}
+					<TouchableHighlight
+						style={styles.more}
+						onPress={this.addItem.bind(this)}
+						underlayColor='#DEDEDE'
+					>
+						<Text style={styles.moreText}>添加更多</Text>
+					</TouchableHighlight> */}
 				</ScrollView>
 			</View>
 		);
@@ -242,6 +286,18 @@ const styles = StyleSheet.create({
 		paddingVertical: 15,
 		paddingHorizontal: 15,
 	},
+	// more: {
+	// 	marginTop: 20,
+	// 	marginBottom: 25,
+	// 	paddingHorizontal: 15,
+	// 	backgroundColor: '#fff',
+	// 	height: 40,
+	// 	justifyContent: 'center',
+	// 	// alignItems: 'center',
+	// },
+	// moreText: {
+	// 	color: '#586C94',
+	// },
 	headRight: {
 		marginRight: 10,
 		borderRadius: 3,

@@ -16,6 +16,7 @@ import com.kumapwd.exit.ExitPackage;
 import com.kumapwd.share.SharePackage;
 import com.kumapwd.backHold.BackHoldPackage;
 import com.kumapwd.aliPay.AliPayPackage;
+import com.kumapwd.fingerprint.FingerprintPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -33,7 +34,8 @@ public class MainApplication extends Application implements ReactApplication {
           new ExitPackage(),
           new SharePackage(),
           new BackHoldPackage(),
-          new AliPayPackage()
+          new AliPayPackage(),
+          new FingerprintPackage()
       );
     }
 

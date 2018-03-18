@@ -19,7 +19,6 @@ if(!__DEV__){
 
 export default class root extends Component {
 	async componentWillMount() {
-		//为了解决react-native第一次启动会重复渲染根节点的bug
 		try {
 			await storage.load({
 				key: 'isInstall'

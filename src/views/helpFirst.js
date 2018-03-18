@@ -65,6 +65,7 @@ class Config extends Component {
 				style={style.container}
 			>
 				<StatusBar
+					// translucent={true}
 					backgroundColor='#ebebeb'
 					barStyle='dark-content'
 				>
@@ -152,6 +153,7 @@ export default connect(setProps)(Config);
 
 const styles = StyleSheet.create({
 	SwiperBox: {
+		// backgroundColor: '#ebebeb',
 		flex: 1,
 	},
 	headerLeftBtn: {
@@ -167,6 +169,8 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		alignItems: 'center',
 		justifyContent: 'center',
+		// borderRadius: 3,
+		// borderWidth: 1,
 		paddingHorizontal: 5,
 		paddingVertical: 3,
 		overflow: 'hidden',

@@ -7,6 +7,7 @@ import {
 	BackHandler,
 	View,
 	ScrollView,
+	Image,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -72,16 +73,16 @@ class About extends Component {
 			>
 				<ScrollView>
 					<View style={styles.iconBox}>
-						<Feather
-							name='github'
-							size={50}
+						<Image
+							source={require('../images/Icon.png')}
+							style={styles.kumaIcon}
 						/>
 						<Text
 							style={[styles.appName, { fontSize: this.props.baseFontSize * 1.2 }]}
 						>{APP_NAME}</Text>
 						<Text
 							style={[styles.version, { fontSize: this.props.baseFontSize * .9 }]}
-						>v1.0.0</Text>
+						>{VERSION}</Text>
 					</View>
 					<View style={styles.listBox}>
 						<TouchableHighlight
@@ -147,7 +148,7 @@ class About extends Component {
 						<ScrollView contentContainerStyle={[style.modalContent]}>
 							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>在使用《{APP_NAME}》前，请您务必仔细阅读并透彻理解本声明。您可以选择不使用《{APP_NAME}》，但如果您使用《{APP_NAME}》，您的使用行为将被视为对本声明全部内容的认可。</Text>
 							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>您拥有《{APP_NAME}》的免费使用权。但不得对《{APP_NAME}》软件进行反向工程、反向汇编、反向编译。</Text>
-							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>您应该对使用《{APP_NAME}》的结果自行承担风险。《{APP_NAME}》是作者学习制作的软件。由于作者技术水平有限，并且软件技术更新速度快，《{APP_NAME}》无法保证是安全的。在使用过程中发生的任何意外或损失，作者概不负责。但作者会努力采取积极的措施保护您帐号、密码的安全。</Text>
+							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>您应该对使用《{APP_NAME}》的结果自行承担风险。《{APP_NAME}》是作者学习制作的软件。由于作者技术水平有限，并且软件技术更新速度快，《{APP_NAME}》无法保证是完全安全的。在使用过程中发生的任何意外或损失，作者概不负责。但作者会努力采取积极的措施保护您帐号、密码的安全。</Text>
 							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>本声明未涉及的问题请参见国家有关法律法规，当本声明与国家有关法律法规冲突时，以国家法律法规为准。</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
@@ -298,5 +299,9 @@ const styles = StyleSheet.create({
 	},
 	modalText: {
 		paddingVertical: 3,
+	},
+	kumaIcon: {
+		width: 50,
+		height: 50,
 	},
 });

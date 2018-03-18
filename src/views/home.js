@@ -18,7 +18,7 @@ import {
 	getAutoBeiFlag,
 	mkdirInit,
 	getTimerFileName,
-	getDataPwd,
+	getPwd,
 } from '../assets/appCommonFn';
 
 //加密组件 crypto-js
@@ -55,7 +55,7 @@ class Home extends Component {
 		let fileFile = `${dirInit.rootFile}/beifen`;
 		storage.getAllDataForKey('accountList').then(accounts => {
 			this.props.dispatch(initAccountList(accounts));
-			FilesAndroid.writeFile(fileFile, `/${getTimerFileName()}.kuma`, CryptoJS.AES.encrypt(JSON.stringify(accounts), getDataPwd()).toString(), true, d => {
+			FilesAndroid.writeFile(fileFile, `/${getTimerFileName()}.kuma`, CryptoJS.AES.encrypt(JSON.stringify(accounts), getPwd()).toString(), true, d => {
 				this.setState({
 					readly,
 					hasPermission: true,
@@ -70,7 +70,6 @@ class Home extends Component {
 		});
 	}
 	async componentWillMount() {
-		//清空今日已备份flag 方便功能调试
 		// await storage.save({
 		// 	key: 'todayIsSave',
 		// 	data: 0,
@@ -108,6 +107,7 @@ class Home extends Component {
 				});
 			});
 		}
+		// storage.clearMapForKey('accountList');
 		BackHandler.addEventListener('hardwareBackPress', this.btnGoBack);
 	}
 	componentWillUnmount() {
@@ -270,7 +270,6 @@ class Home extends Component {
 		}
 		if (!this.state.readly || this.props.baseFontSize == null) return null;
 		const { navigate } = this.props.navigation;
-		//留下最简数据格式 方便调试
 		// let sections = [
 		// 		{key: 'A', data: [
 		// 			{name: '淘宝淘宝淘宝淘宝淘宝淘宝', account: 'aaa123456'},
@@ -341,6 +340,8 @@ const styles = StyleSheet.create({
 	headerBtn: {
 		marginRight: 12,
 		padding: 5,
+		// backgroundColor: '#c00',
+		// borderWidth: 1,
 	},
 	addBox: {
 		justifyContent: 'center',

@@ -131,12 +131,18 @@ class Config extends Component {
 				</TouchableHighlight>
 			);
 		})(),
+		// headerTitleStyle: {
+		// 	// borderWidth: 1,
+		// 	marginLeft: 0,
+		// 	paddingLeft: 0,
+		// 	fontWeight: '100',
+		// 	fontFamily: 'monospace',
+		// },
 	});
 	render() {
-		//留下最简数据方便调试
 		// let sections = [
 		// 		{key: 'A', data: [
-		// 			{account: 'yiyayiyayo', id: "cb8df2c0-0c98-11e8-bd79-c7b92b886400", name: "acFun", pinyin: "A", pwd: "U2FsdGVkX19HE260UyMhdvvhTaDWzipvzg3j4vqpUoY=", star: false, type: "EDIT_ACCOUNT_LIST"},
+		// 			{account: 'tjvhj', id: "cb8df2c0-0c98-11e8-bd79-c7b92b886400", name: "acFun", pinyin: "A", pwd: "U2FsdGVkX19HE260UyMhdvvhTaDWzipvzg3j4vqpUoY=", star: false, type: "EDIT_ACCOUNT_LIST"},
 		// 		]},
 		// 	];
 		if (!this.state.readly || this.props.baseFontSize == null) return null;
@@ -167,7 +173,9 @@ export default connect(setProps)(Config);
 
 const styles = StyleSheet.create({
 	headerSearchBox: {
+		// backgroundColor: '#c00',
 		flexDirection: 'row',
+		// justifyContent: 'center',
 		alignItems: 'center',
 	},
 	headerSearchInputBox: {

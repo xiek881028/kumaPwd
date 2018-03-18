@@ -109,6 +109,13 @@ class configEditFont extends Component {
 				</TouchableHighlight>
 			);
 		})(),
+		// headerTitleStyle: {
+		// 	// borderWidth: 1,
+		// 	marginLeft: 0,
+		// 	paddingLeft: 0,
+		// 	fontWeight: '100',
+		// 	fontFamily: 'monospace',
+		// },
 	});
 	render() {
 		if (this.props.baseFontSize == null || !this.state.readly) return null;
@@ -235,9 +242,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'flex-end',
+		// paddingHorizontal: 10,
 		paddingBottom: 10,
 	},
 	bottomFont: {
+		// backgroundColor: '#c00',
 		width: 50,
 		textAlign: 'center',
 	},
@@ -249,11 +258,13 @@ const styles = StyleSheet.create({
 	},
 	box: {
 		flexDirection: 'row',
+		// justifyContent: 'space-around',
 		height: 60,
 		backgroundColor: '#fff',
 	},
 	item: {
 		textAlignVertical: 'center',
+		// borderWidth: 1,
 		width: 120,
 		paddingLeft: 15,
 		color: '#353535',
@@ -269,6 +280,7 @@ const styles = StyleSheet.create({
 	},
 	headItem: {
 		textAlignVertical: 'center',
+		// borderWidth: 1,
 		height: 24,
 		paddingHorizontal: 15,
 		color: '#888',
@@ -292,6 +304,7 @@ const styles = StyleSheet.create({
 		color: '#353535',
 	},
 	detailsLine: {
+		// flexDirection: 'row',
 		padding: 10,
 	},
 	LineHead: {

@@ -1,18 +1,18 @@
 /*
 !/src
+/src/assets/appCommonFn.js
 !/photoShop_images
-!/apktool
-!README.md
 !app.json
 !index.js
 !package.json
 !.gitignore
+!README.md
 
 !/android
 /android/*
 !/android/app
-!/android/gradle.properties
+!/android/gradle.properties.sample
 /android/app/*
 !/android/app/src
 !/android/app/build.gradle
-
+!/android/app/proguard-rules.pro

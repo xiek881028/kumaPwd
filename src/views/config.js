@@ -78,16 +78,23 @@ class Config extends Component {
 				</TouchableHighlight>
 			);
 		})(),
+		// headerTitleStyle: {
+		// 	// borderWidth: 1,
+		// 	marginLeft: 0,
+		// 	paddingLeft: 0,
+		// 	fontWeight: '100',
+		// 	fontFamily: 'monospace',
+		// },
 	});
 	shareApp() {
 		if (OS == 'android') {
-			ShareAndroid.shareText('分享应用', 'http://www.bagazhu.com');
+			ShareAndroid.shareText('分享应用', '账号匣，简单、安全、好用的账号记录工具\nhttps://www.coolapk.com/apk/180130');
 		}
 	}
 	sections = [
 		// {
 		// 	key: '', data: [
-		// 		{ name: '新手引导', href: 'helpFirst', data: { _mode: 'learnAgain' } },
+		// 		{ name: '重看新手引导', href: 'helpFirst', data: { _mode: 'learnAgain' } },
 		// 	]
 		// },
 		{

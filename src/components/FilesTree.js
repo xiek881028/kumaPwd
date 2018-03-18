@@ -31,7 +31,7 @@ export default class FilesTree extends Component {
 		};
 	}
 	// tempJson = {};
-	getFileTree = (path = '/storage/emulated/0', cb = () => { }) => {
+	getFileTree = (path = '/storage/emulated/0', cb=()=>{}) => {
 		// if(this.tempJson[path] == undefined){
 		FilesAndroid.getFilesTree(path, (d) => {
 			let _arr = [];
@@ -47,7 +47,7 @@ export default class FilesTree extends Component {
 					parentPath: d.prev,
 					path,
 				}, cb());
-				if (!_arr.length) {
+				if(!_arr.length){
 					console.log('is empty');
 					this.props.emptyCb && this.props.emptyCb();
 				}
@@ -58,38 +58,49 @@ export default class FilesTree extends Component {
 			} else {
 				if (d.message == 'is file') {
 					console.log(d.message);
-					this.props.fileCb && this.props.fileCb({ path, ...d });
+					this.props.fileCb && this.props.fileCb({path, ...d});
 				}
 			}
 		});
+		// }else{
+		// 	this.setState({
+		// 		fileTree: this.tempJson[path].data,
+		// 		parentPath: this.tempJson[path].parentPath,
+		// 	});
+		// }
 	}
 	btnGoBack = () => {
-		console.log('back');
-		this.props.navigation.goBack();
+		// if (!this.state.parentPath.length) {
+			console.log('back');
+			this.props.navigation.goBack();
+		// } else {
+		// 	this.props.isRoot(this.state.parentPath == this.state.rootPath);
+		// 	this.getFileTree(this.state.parentPath);
+		// }
 		return true;
 	}
 	componentWillMount() {
 		fileIsExists(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`)
-			.then(d => {
-				if (d.flag) {
-					if (d.flag && d.data) {
-						this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
-						this.props.isRoot && this.props.isRoot(false);
-					} else {
-						mkdirInit()
-							.then(_d => {
-								if (!_d.flag || (_d.flag && !_d.data)) {
-									this.getFileTree(FilesAndroid.ROOT_PATH);
-									this.props.isRoot && this.props.isRoot(true);
-								} else {
-									this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
-									this.props.isRoot && this.props.isRoot(false);
-								}
-							});
-					}
+		.then(d=>{
+			if(d.flag){
+				if(d.flag && d.data){
+					this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
+					this.props.isRoot && this.props.isRoot(false);
+				}else{
+					mkdirInit()
+					.then(_d=>{
+						if(!_d.flag || (_d.flag && !_d.data)){
+							this.getFileTree(FilesAndroid.ROOT_PATH);
+							this.props.isRoot && this.props.isRoot(true);
+						}else{
+							this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
+							this.props.isRoot && this.props.isRoot(false);
+						}
+					});
 				}
-			})
-			;
+			}
+		})
+		;
 		BackHandler.addEventListener('hardwareBackPress', this.btnGoBack);
 		AppState.addEventListener('change', this.appStateChange);
 	}
@@ -98,12 +109,12 @@ export default class FilesTree extends Component {
 		BackHandler.removeEventListener('hardwareBackPress', this.btnGoBack);
 		AppState.removeEventListener('change', this.appStateChange);
 	}
-	appStateChange = () => {
-		if (AppState.currentState == 'active') {
+	appStateChange = ()=>{
+		if(AppState.currentState == 'active'){
 			this.getFileTree(this.state.path);
 		};
 	}
-	shouldComponentUpdate(prop, state) {
+	shouldComponentUpdate(prop, state){
 		return this.state != state;
 	}
 	render() {
@@ -138,10 +149,10 @@ export default class FilesTree extends Component {
 							<View style={styles.emptyBox}>
 								<Feather
 									name="folder"
-									style={[styles.emptyIcon, { fontSize: this.props.baseFontSize * 2 }]}
+									style={[styles.emptyIcon, {fontSize: this.props.baseFontSize * 2}]}
 								/>
 								<Text
-									style={[styles.emptyText, { fontSize: this.props.baseFontSize }]}
+									style={[styles.emptyText, {fontSize: this.props.baseFontSize}]}
 								>没有文件</Text>
 							</View>
 						);
@@ -150,7 +161,7 @@ export default class FilesTree extends Component {
 						return (
 							<TouchableHighlight
 								onPress={() => {
-									this.getFileTree(item.path, () => {
+									this.getFileTree(item.path, ()=>{
 										this.props.isRoot(item.path == this.state.rootPath);
 									});
 								}}

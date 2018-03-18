@@ -45,7 +45,7 @@ editData = (data)=>{
 		returnData = data;
 		if(array[index].pinyin == data.pinyin){
 			array[index] = data;
-		}else{//更改名字首字母 数据需要重新整理
+		}else{//居然改了名字首字母
 			array.splice(index, 1);
 			addData(data, true);
 		}

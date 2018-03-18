@@ -20,7 +20,7 @@ import {
 } from '../actions';
 import {
 	loginState,
-	getDataPwd,
+	getPwd,
 } from '../assets/appCommonFn';
 
 //Css
@@ -74,6 +74,10 @@ class Deatils extends Component {
 			readly: false,
 		};
 		this.props.dispatch(searchAccountById(this.state.data.id, this.state.data.pinyin));
+		// this.props.data.data && Object.keys(this.props.data.data).map((item)=>{
+		// 	console.log(item);
+		// });
+		// this.state.star = this.props.data.star;
 	}
 	btnGoBack = () => {
 		this.props.navigation.goBack();
@@ -160,7 +164,7 @@ class Deatils extends Component {
 		});
 		_data.push({
 			key: '密码',
-			value: CryptoJS.AES.decrypt(data.pwd, getDataPwd()).toString(CryptoJS.enc.Utf8) || '',
+			value: CryptoJS.AES.decrypt(data.pwd, getPwd()).toString(CryptoJS.enc.Utf8) || '',
 		});
 		return (
 			<View
@@ -344,6 +348,7 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#eee',
 	},
 	tipsLine: {
+		// flexDirection: 'row',
 		padding: 10,
 	},
 	tipsLineLabel: {
@@ -370,6 +375,10 @@ const styles = StyleSheet.create({
 		borderRadius: 3,
 		borderWidth: 1,
 	},
+	// btnSuccess: {
+	// 	backgroundColor: '#1AAD19',
+	// 	borderColor: '#179B16',
+	// },
 	btn: {
 		lineHeight: 46,
 	},

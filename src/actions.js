@@ -1,4 +1,4 @@
-//actions用于定义传入的数据结构 尽可能的简介
+//actions用于定义传入的数据结构 尽可能的简洁
 import {
 	ADD_ACCOUNT_LIST,
 	DEL_ACCOUNT_LIST,
@@ -8,6 +8,8 @@ import {
 	ACCOUNT_TO_TOP,
 	EDIT_FONT_SIZE,
 	INIT_FONT_SIZE,
+	EDIT_COLOR,
+	INIT_COLOR,
 } from './actionTypes';
 
 // accounts
@@ -46,14 +48,24 @@ const accountToTop = (id='', pinyin='like')=>({
 	type: ACCOUNT_TO_TOP,
 });
 
-const editFontSize = (size=20)=>({
+const editFontSize = (size)=>({
 	size,
 	type: EDIT_FONT_SIZE,
 });
 
-const initFontSize = (size=20)=>({
+const initFontSize = (size)=>({
 	size,
 	type: INIT_FONT_SIZE,
+});
+
+const editColor = (color)=>({
+	color,
+	type: EDIT_COLOR,
+});
+
+const initColor = (color)=>({
+	color,
+	type: INIT_COLOR,
 });
 
 export {
@@ -65,4 +77,6 @@ export {
 	accountToTop,
 	editFontSize,
 	initFontSize,
+	editColor,
+	initColor,
 };

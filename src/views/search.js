@@ -103,7 +103,7 @@ class Config extends Component {
 						<InputView
 							placeholder='搜索'
 							autoFocus={true}
-							fontSize={_this.props.baseFontSize}
+							fontSize={style.baseFontSize}
 							getText={(text) => {
 								_this.getText(text);
 							}}
@@ -145,7 +145,7 @@ class Config extends Component {
 		// 			{account: 'tjvhj', id: "cb8df2c0-0c98-11e8-bd79-c7b92b886400", name: "acFun", pinyin: "A", pwd: "U2FsdGVkX19HE260UyMhdvvhTaDWzipvzg3j4vqpUoY=", star: false, type: "EDIT_ACCOUNT_LIST"},
 		// 		]},
 		// 	];
-		if (!this.state.readly || this.props.baseFontSize == null) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View style={style.container}>
 				<List
@@ -155,7 +155,7 @@ class Config extends Component {
 					isSearch={true}
 					isSearchEmpty={this.state.isSearchEmpty}
 					searchKey={this.state.searchKey}
-					baseFontSize={this.props.baseFontSize}
+					baseFontSize={style.baseFontSize}
 				/>
 			</View>
 		);
@@ -165,7 +165,6 @@ class Config extends Component {
 const setProps = (state) => {
 	return {
 		account: state.AccountList,
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

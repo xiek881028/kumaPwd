@@ -11,7 +11,10 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 
-import { loginState } from '../assets/appCommonFn';
+import {
+	loginState,
+	setFontSize,
+} from '../assets/appCommonFn';
 import { editFontSize } from '../actions';
 
 //Css
@@ -46,12 +49,12 @@ class configEditFont extends Component {
 		}
 		return nowValIndex;
 	}
-	componentWillReceiveProps(props) {
-		this.setState({
-			settingFont: props.baseFontSize,
-			valIndex: this.mathValIndex(props.baseFontSize),
-		});
-	}
+	// componentWillReceiveProps(props) {
+	// 	this.setState({
+	// 		settingFont: props.baseFontSize,
+	// 		valIndex: this.mathValIndex(props.baseFontSize),
+	// 	});
+	// }
 	async componentWillMount() {
 		let readly = await loginState(this.props);
 		this.setState({
@@ -66,6 +69,7 @@ class configEditFont extends Component {
 	}
 	save() {
 		let { goBack } = this.props.navigation;
+		setFontSize(this.state.settingFont, style);
 		this.props.dispatch(editFontSize(this.state.settingFont));
 		goBack();
 	}
@@ -189,9 +193,9 @@ class configEditFont extends Component {
 						<Text style={[styles.bottomFont, styles.bottomFontLast, styles.fontBigger]}>大</Text>
 					</View>
 					<Slider
-						maximumTrackTintColor='#68605d'
-						minimumTrackTintColor='#68605d'
-						thumbTintColor='#68605d'
+						maximumTrackTintColor={style.btnBg.backgroundColor}
+						minimumTrackTintColor={style.btnBg.backgroundColor}
+						thumbTintColor={style.btnBg.backgroundColor}
 						maximumValue={3}
 						value={this.state.valIndex}
 						step={1}

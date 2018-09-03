@@ -21,6 +21,9 @@ import {
 //android独有
 import FilesAndroid from '../NativeModules/FilesAndroid';
 
+//Css
+import style from '../css/common.js';
+
 export default class FilesTree extends Component {
 	constructor(props) {
 		super(props);
@@ -118,12 +121,12 @@ export default class FilesTree extends Component {
 		return this.state != state;
 	}
 	render() {
-		if (this.props.baseFontSize == null || this.state.fileTree == undefined) return null;
+		if (this.state.fileTree == undefined) return null;
 		return (
 			<View style={styles.fileTreeBox}>
 				<View style={styles.pathBox}>
 					<Text
-						style={[styles.pathText, { fontSize: this.props.baseFontSize * .85 }]}
+						style={[styles.pathText, { fontSize: style.baseFontSize * .85 }]}
 					>
 						当前路径：
 					</Text>
@@ -132,7 +135,7 @@ export default class FilesTree extends Component {
 						showsHorizontalScrollIndicator={false}
 					>
 						<Text
-							style={[styles.pathText, { fontSize: this.props.baseFontSize * .85 }]}
+							style={[styles.pathText, { fontSize: style.baseFontSize * .85 }]}
 						>
 							{this.state.path}
 						</Text>
@@ -149,10 +152,10 @@ export default class FilesTree extends Component {
 							<View style={styles.emptyBox}>
 								<Feather
 									name="folder"
-									style={[styles.emptyIcon, {fontSize: this.props.baseFontSize * 2}]}
+									style={[styles.emptyIcon, {fontSize: style.baseFontSize * 2}]}
 								/>
 								<Text
-									style={[styles.emptyText, {fontSize: this.props.baseFontSize}]}
+									style={[styles.emptyText, {fontSize: style.baseFontSize}]}
 								>没有文件</Text>
 							</View>
 						);
@@ -171,22 +174,22 @@ export default class FilesTree extends Component {
 								<View style={styles.itemBox}>
 									<FontAwesome
 										name={item.mode == 'folder' ? 'folder' : 'file'}
-										style={[styles.fileIcon, { fontSize: this.props.baseFontSize * 2, color: item.mode == 'folder' ? '#fcba48' : '#a3b8cb' }]}
+										style={[styles.fileIcon, { fontSize: style.baseFontSize * 2, color: item.mode == 'folder' ? '#fcba48' : '#a3b8cb' }]}
 									/>
 									<View style={styles.itemFileBox}>
 										<Text
-											style={[styles.itemFileName, { fontSize: this.props.baseFontSize }]}
+											style={[styles.itemFileName, { fontSize: style.baseFontSize }]}
 											numberOfLines={2}
 										>{item.name}</Text>
 										<Text
-											style={{ fontSize: this.props.baseFontSize * .8 }}
+											style={{ fontSize: style.baseFontSize * .8 }}
 										>{item.lastTime}</Text>
 									</View>
 									{
 										item.mode == 'folder' ?
 											<Feather
 												name='chevron-right'
-												style={[styles.icon, { fontSize: this.props.baseFontSize }]}
+												style={[styles.icon, { fontSize: style.baseFontSize }]}
 											/>
 											: <Text style={styles.icon}></Text>
 									}
@@ -195,7 +198,7 @@ export default class FilesTree extends Component {
 						);
 					}}
 					keyExtractor={(item, index) => {
-						return index;
+						return index.toString();
 					}}
 					getItemLayout={(data, index) => {
 						return ({

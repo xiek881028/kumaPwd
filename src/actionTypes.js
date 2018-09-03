@@ -9,3 +9,6 @@ export const ACCOUNT_TO_TOP = 'ACCOUNT_TO_TOP';
 
 export const EDIT_FONT_SIZE = 'EDIT_FONT_SIZE';
 export const INIT_FONT_SIZE = 'INIT_FONT_SIZE';
+
+export const EDIT_COLOR = 'EDIT_COLOR';
+export const INIT_COLOR = 'INIT_COLOR';

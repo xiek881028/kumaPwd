@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StackNavigator} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation';
 
 import style from '../css/common';
 
@@ -10,13 +10,14 @@ import config from '../views/config';
 import editAcount from '../views/editAcount';
 import details from '../views/details';
 import login from '../views/login';
+import configColor from '../views/configColor';
 import configEditFont from '../views/configEditFont';
 import dataBackUp from '../views/dataBackUp';
 import helpFirst from '../views/helpFirst';
 import configAdv from '../views/configAdv';
 import about from '../views/about';
 
-export default Routers = StackNavigator(
+export default Routers = createStackNavigator(
 	{
 		home: {screen: home},
 		config: {screen: config},
@@ -24,6 +25,7 @@ export default Routers = StackNavigator(
 		editAcount: {screen: editAcount},
 		details: {screen: details},
 		login: {screen: login},
+		configColor: {screen: configColor},
 		configEditFont: {screen: configEditFont},
 		dataBackUp: {screen: dataBackUp},
 		helpFirst: {screen: helpFirst},

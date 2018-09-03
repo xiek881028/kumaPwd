@@ -72,7 +72,6 @@ class AddAconut extends Component {
 		headerStyle: [style.headerStyle],
 		headerLeft: (() => {
 			const { state, goBack } = navigation;
-			// console.log(state);
 			return (
 				<TouchableHighlight
 					activeOpacity={0.6}
@@ -180,7 +179,7 @@ class AddAconut extends Component {
 		}
 	}
 	render() {
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		if (!this.state.readly) return null;
 		let { state } = this.props.navigation;
 		return (
 			<View style={style.container}>
@@ -193,8 +192,8 @@ class AddAconut extends Component {
 				>
 					<View>
 						<View style={styles.groupTitle}>
-							<Text style={[styles.groupTitleText, { fontSize: this.props.baseFontSize }]}>名称</Text>
-							<Text style={[styles.warning, { fontSize: this.props.baseFontSize * .8 }]}>(必填)</Text>
+							<Text style={[styles.groupTitleText, { fontSize: style.baseFontSize }]}>名称</Text>
+							<Text style={[styles.warning, { fontSize: style.baseFontSize * .8 }]}>(必填)</Text>
 						</View>
 						<View style={styles.groupInput}>
 							<InputView
@@ -202,34 +201,34 @@ class AddAconut extends Component {
 								getText={this.getText.bind(this, 'name')}
 								value={this.defaultName}
 								autoFocus={state.params.mode == 'add'}
-								fontSize={this.props.baseFontSize}
+								fontSize={style.baseFontSize}
 							/>
 						</View>
 					</View>
 					<View>
 						<View style={styles.groupTitle}>
-							<Text style={[styles.groupTitleText, { fontSize: this.props.baseFontSize }]}>账号</Text>
-							<Text style={[styles.warning, { fontSize: this.props.baseFontSize * .8 }]}>(必填)</Text>
+							<Text style={[styles.groupTitleText, { fontSize: style.baseFontSize }]}>账号</Text>
+							<Text style={[styles.warning, { fontSize: style.baseFontSize * .8 }]}>(必填)</Text>
 						</View>
 						<View style={styles.groupInput}>
 							<InputView
 								placeholder='点这里输入账号'
 								getText={this.getText.bind(this, 'account')}
 								value={this.defaultAccount}
-								fontSize={this.props.baseFontSize}
+								fontSize={style.baseFontSize}
 							/>
 						</View>
 					</View>
 					<View>
 						<View style={styles.groupTitle}>
-							<Text style={[styles.groupTitleText, { fontSize: this.props.baseFontSize }]}>密码</Text>
+							<Text style={[styles.groupTitleText, { fontSize: style.baseFontSize }]}>密码</Text>
 						</View>
 						<View style={styles.groupInput}>
 							<InputView
 								placeholder='点这里输入密码'
 								getText={this.getText.bind(this, 'pwd')}
 								value={this.defaultPwd}
-								fontSize={this.props.baseFontSize}
+								fontSize={style.baseFontSize}
 							/>
 						</View>
 					</View>
@@ -261,7 +260,6 @@ class AddAconut extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

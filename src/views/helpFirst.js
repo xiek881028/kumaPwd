@@ -59,7 +59,7 @@ class Config extends Component {
 		header: null,
 	});
 	render() {
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View
 				style={style.container}
@@ -134,7 +134,7 @@ class Config extends Component {
 							underlayColor='transparent'
 							style={styles.btnBox}
 						>
-							<Text style={[styles.btn, { fontSize: this.props.baseFontSize * 1 }]}>点我直接进入</Text>
+							<Text style={[styles.btn, { fontSize: style.baseFontSize * 1 }]}>点我直接进入</Text>
 						</TouchableHighlight>
 						: null
 				}
@@ -145,7 +145,6 @@ class Config extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

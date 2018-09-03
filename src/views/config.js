@@ -100,6 +100,7 @@ class Config extends Component {
 		{
 			key: '', data: [
 				{ name: '设置字体大小', href: 'configEditFont' },
+				{ name: '设置主题色', href: 'configColor' },
 			]
 		},
 		{
@@ -139,7 +140,7 @@ class Config extends Component {
 		},
 	];
 	render() {
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View style={style.container}>
 				<View>
@@ -172,7 +173,7 @@ class Config extends Component {
 								>
 									<View style={styles.box}>
 										<Text
-											style={[styles.item, { fontSize: this.props.baseFontSize }]}
+											style={[styles.item, { fontSize: style.baseFontSize }]}
 											numberOfLines={1}
 										>
 											{item.name}
@@ -190,7 +191,7 @@ class Config extends Component {
 						ItemSeparatorComponent={() => <View style={styles.border}></View>}
 						initialNumToRender={20}
 						keyExtractor={(item, index) => {
-							return index;
+							return index.toString();
 						}}
 						sections={this.sections}
 						getItemLayout={(data, index) => {
@@ -217,12 +218,12 @@ class Config extends Component {
 						<View
 							style={style.modalBox}
 						>
-							<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>捐助作者</Text>
+							<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>捐助作者</Text>
 							<ScrollView contentContainerStyle={[style.modalContent]}>
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>人间有真情，人间有真爱。</Text>
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>好人一生平安。</Text>
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>您的一点小小支持将是作者前进的动力。</Text>
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>Ps：目前只支持用支付宝进行捐助。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>人间有真情，人间有真爱。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>好人一生平安。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>您的一点小小支持将是作者前进的动力。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>Ps：只支持用支付宝进行捐助。</Text>
 							</ScrollView>
 							<View style={style.modalFooter}>
 								<TouchableHighlight
@@ -233,7 +234,7 @@ class Config extends Component {
 									}}
 								>
 									<Text
-										style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+										style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 									>取消</Text>
 								</TouchableHighlight>
 								<TouchableHighlight
@@ -252,7 +253,7 @@ class Config extends Component {
 									}}
 								>
 									<Text
-										style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+										style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 									>确定</Text>
 								</TouchableHighlight>
 							</View>
@@ -261,9 +262,9 @@ class Config extends Component {
 						<View
 							style={style.modalBox}
 						>
-							<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>捐助失败</Text>
+							<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>捐助失败</Text>
 							<ScrollView contentContainerStyle={[style.modalContent]}>
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>QAQ...唤起支付宝失败了，可能是因为您的手机没有安装支付宝。您不能给作者小钱钱了。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>QAQ...唤起支付宝失败了，可能是因为您的手机没有安装支付宝。您不能给作者小钱钱了。</Text>
 							</ScrollView>
 							<View style={style.modalFooter}>
 								<TouchableHighlight
@@ -274,7 +275,7 @@ class Config extends Component {
 									}}
 								>
 									<Text
-										style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+										style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 									>关闭</Text>
 								</TouchableHighlight>
 							</View>
@@ -288,7 +289,6 @@ class Config extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

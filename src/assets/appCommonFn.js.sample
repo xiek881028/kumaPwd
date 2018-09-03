@@ -1,10 +1,13 @@
 //加密组件 crypto-js
 import CryptoJS from 'crypto-js';
 
-import { initFontSize } from '../actions';
+import { initFontSize, initColor } from '../actions';
 //android独有
 import FilesAndroid from '../NativeModules/FilesAndroid';
 import BackHoldAndroid from '../NativeModules/BackHoldAndroid';
+
+//获取主题颜色列表
+import ColorList from './color';
 
 let isLogin = false;
 let savePwd = '';
@@ -34,7 +37,17 @@ const init = async props => {
 		savePwd = await storage.load({ key: 'Password' });
 	}catch(err){
 	}
-	fontInit(props);
+	fontInit(props)
+		.then(data => {
+			data.props.dispatch(initFontSize(data.fontSize));
+		})
+	;
+	colorInit(props)
+		.then(data => {
+			data.props.dispatch(initColor(data.color));
+		})
+		;
+	;
 	mkdirInit();
 	//进行后台留存设置task
 	BackHoldAndroid.setBackHoldTime(await getBackHoldFlag() ? +await getBackHoldTime() : 10);
@@ -110,8 +123,7 @@ const fontInit = props => new Promise(function (resolve) {
 		key: 'fontSize'
 	})
 		.then(data => {
-			props.dispatch(initFontSize(data));
-			resolve();
+			resolve({props, fontSize: data});
 		})
 		.catch(err => {
 			let baseFont = 16;
@@ -122,13 +134,58 @@ const fontInit = props => new Promise(function (resolve) {
 				data: defaultFont,
 			})
 				.then(() => {
-					props.dispatch(initFontSize(defaultFont));
-					resolve();
+					resolve({props, fontSize: defaultFont});
 				})
 				;
 		})
 		;
 });
+
+const colorInit = props => new Promise(function (resolve) {
+	// storage.remove({
+	// 	key: 'fontSize'
+	// });
+	storage.load({
+		key: 'color'
+	})
+		.then(data => {
+			resolve({props, color: data});
+		})
+		.catch(err => {
+			let baseColor = '#68605d';
+			let defaultColor = baseColor;
+			storage.save({
+				key: 'color',
+				data: defaultColor,
+			})
+				.then(data => {
+					resolve({props, color: defaultColor});
+				})
+				;
+		})
+		;
+});
+
+function setColor(color, style) {
+	if(!color)return;
+	style.btnBg = {
+		backgroundColor: ColorList[color].color,
+		borderColor: ColorList[color].color,
+	};
+	style.btnHeightBg = {
+		backgroundColor: ColorList[color].heightColor,
+		borderColor: ColorList[color].heightColor,
+	};
+	style.btnDisabledBg = {
+		backgroundColor: ColorList[color].disabledColor,
+		borderColor: ColorList[color].disabledColor,
+	};
+}
+
+function setFontSize(fontSize, style) {
+	if(!fontSize)return;
+	style.baseFontSize = fontSize;
+}
 
 function addPwd(pwd) {
 	storage.save({
@@ -207,20 +264,24 @@ const getErrorPwdTime = _constructor('errorPwdTime', `${1000 * 60 * 60}`);
 const getFingerprintFlag = _constructor('fingerprintFlag', true);
 
 module.exports = {
-	loginState,
 	addPwd,
-	getPwd,
-	tryLogin,
-	mkdirInit,
+	colorInit,
 	fileIsExists,
-	getPwdErr,
+	fontInit,
 	getAutoBeiFlag,
 	getBackHoldFlag,
 	getBackHoldTime,
 	getErrorPwdFlag,
 	getErrorPwdNum,
 	getErrorPwdTime,
-	getTimerFileName,
 	getFingerprintFlag,
+	getTimerFileName,
+	getPwd,
+	getPwdErr,
+	loginState,
+	mkdirInit,
+	setColor,
+	setFontSize,
 	setLoginState,
+	tryLogin,
 }

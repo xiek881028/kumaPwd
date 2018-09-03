@@ -36,6 +36,9 @@ const headerLeftBtn = {
 	padding: 3,
 };
 
+//fontSize
+const baseFontSize = 16;
+
 // btn
 const btnBg = {
 	backgroundColor: '#68605d',
@@ -130,6 +133,8 @@ module.exports = {
 	headerRightBox,
 	headerTitleIcon,
 	headerLeftBtn,
+
+	baseFontSize,
 
 	btnColor,
 	btnSubColor,

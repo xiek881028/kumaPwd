@@ -91,14 +91,14 @@ class ListItem extends Component {
 				underlayColor='#d9d9d9'
 			>
 				<View style={styles.box}>
-					{this.renderSearch(this.props.item.name, { style: [styles.item, { fontSize: this.props.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)}
+					{this.renderSearch(this.props.item.name, { style: [styles.item, { fontSize: style.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)}
 					{this.props.isSearch ?
-						this.renderSearch(this.props.item.account, { style: [styles.account, { fontSize: this.props.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)
+						this.renderSearch(this.props.item.account, { style: [styles.account, { fontSize: style.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)
 						: null
 					}
 					{/* <Feather
 						name='chevron-right'
-						style={[styles.icon, {fontSize: this.props.baseFontSize}]}
+						style={[styles.icon, {fontSize: style.baseFontSize}]}
 					/> */}
 				</View>
 			</TouchableHighlight>
@@ -112,11 +112,11 @@ class ListItemHead extends Component {
 			<View style={styles.headBox}>
 				{this.props.section.key == 'like' ?
 					<FontAwesome
-						style={[styles.headItem, { fontSize: this.props.baseFontSize * .7 }]}
+						style={[styles.headItem, { fontSize: style.baseFontSize * .7 }]}
 						name='star'
 					/>
 					:
-					<Text style={[styles.headItem, { fontSize: this.props.baseFontSize * .7 }]}>{this.props.section.key}</Text>
+					<Text style={[styles.headItem, { fontSize: style.baseFontSize * .7 }]}>{this.props.section.key}</Text>
 				}
 			</View>
 		);
@@ -237,21 +237,21 @@ export default class List extends Component {
 			if (this.props.isSearchEmpty) {
 				return (
 					<View style={styles.searchEmptyBox}>
-						<Text style={[styles.searchEmptyTxt, { fontSize: this.props.baseFontSize }]}>搜索不到相关结果</Text>
+						<Text style={[styles.searchEmptyTxt, { fontSize: style.baseFontSize }]}>搜索不到相关结果</Text>
 					</View>
 				);
 			} else {
 				return (
 					<View style={styles.searchEmptyBox}>
-						<Text style={[styles.searchEmptyTxt, { fontSize: this.props.baseFontSize }]}>搜索关键词可以是名称或账号</Text>
+						<Text style={[styles.searchEmptyTxt, { fontSize: style.baseFontSize }]}>搜索关键词可以是名称或账号</Text>
 					</View>
 				);
 			}
 		} else {
 			return (
 				<View style={[styles.emptyBox, { height: this.state.layoutHeight }]}>
-					<Text style={[styles.emptyYan, { fontSize: this.props.baseFontSize * .9 }]}>(｡・`ω´･)</Text>
-					<Text style={[styles.emptyTxt, { fontSize: this.props.baseFontSize * 1.2 }]}>万事皆空</Text>
+					<Text style={[styles.emptyYan, { fontSize: style.baseFontSize * .9 }]}>(｡・`ω´･)</Text>
+					<Text style={[styles.emptyTxt, { fontSize: style.baseFontSize * 1.2 }]}>万事皆空</Text>
 				</View>
 			);
 		}
@@ -273,16 +273,16 @@ export default class List extends Component {
 							callSetBtn={this.props.callSetBtn}
 							isSearch={!!this.props.isSearch}
 							searchKey={this.props.searchKey}
-							baseFontSize={this.props.baseFontSize}
+							baseFontSize={style.baseFontSize}
 						/>
 					}}
-					renderSectionHeader={({ section }) => <ListItemHead section={section} baseFontSize={this.props.baseFontSize} />}
+					renderSectionHeader={({ section }) => <ListItemHead section={section} baseFontSize={style.baseFontSize} />}
 					ItemSeparatorComponent={() => <View style={styles.border}></View>}
 					ListEmptyComponent={this.Listempty.bind(this)}
 					initialNumToRender={50}
 					ref='sectionList'
 					keyExtractor={(item, index) => {
-						return index;
+						return index.toString();
 					}}
 					//-20以后在首次添加账号时会出现高度错乱的bug 但-20目前效果很好 所以暂时不修复
 					// onLayout={this.mathHeight.bind(this)}
@@ -301,7 +301,7 @@ export default class List extends Component {
 							this.props.sections.length ?
 								<View style={styles.bottomPad}>
 									<Text
-										style={[styles.bottomPadText, { fontSize: this.props.baseFontSize * .9 }]}
+										style={[styles.bottomPadText, { fontSize: style.baseFontSize * .9 }]}
 									>我是有底线的</Text>
 									<View
 										style={styles.bottomPadBorder}

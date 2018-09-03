@@ -80,7 +80,7 @@ class ConfigAdv extends Component {
 							<View>
 								<View style={[styles.box]}>
 									<Text
-										style={[styles.item, { fontSize: this.props.baseFontSize }]}
+										style={[styles.item, { fontSize: style.baseFontSize }]}
 										numberOfLines={1}
 									>
 										指纹登录
@@ -118,7 +118,7 @@ class ConfigAdv extends Component {
 								<View>
 									<View style={[styles.box, styles.hasSubBox]}>
 										<Text
-											style={[styles.item, { fontSize: this.props.baseFontSize }]}
+											style={[styles.item, { fontSize: style.baseFontSize }]}
 											numberOfLines={1}
 										>
 											自动备份
@@ -163,7 +163,7 @@ class ConfigAdv extends Component {
 										/>
 									</View>
 									<View>
-										<Text style={[styles.itemSub, { fontSize: this.props.baseFontSize * .9 }]}>自动备份会在每天第一次成功登录应用后进行。</Text>
+										<Text style={[styles.itemSub, { fontSize: style.baseFontSize * .9 }]}>自动备份会在每天第一次成功登录应用后进行。</Text>
 									</View>
 								</View>
 							);
@@ -180,7 +180,7 @@ class ConfigAdv extends Component {
 									<View>
 										<View style={[styles.box, styles.hasSubBox]}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												后台留存
@@ -207,7 +207,7 @@ class ConfigAdv extends Component {
 											/>
 										</View>
 										<View>
-											<Text style={[styles.itemSub, { fontSize: this.props.baseFontSize * .9 }]}>应用进入后台的保留时间。出于安全考虑时间不建议设置太长。</Text>
+											<Text style={[styles.itemSub, { fontSize: style.baseFontSize * .9 }]}>应用进入后台的保留时间。出于安全考虑时间不建议设置太长。</Text>
 										</View>
 									</View>
 								</View>
@@ -222,13 +222,13 @@ class ConfigAdv extends Component {
 										<View style={styles.border}></View>
 										<View style={[styles.box]}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												后台留存时间
 											</Text>
 											<Text
-												style={[styles.item, styles.itemRight, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, styles.itemRight, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{this.backHoldTimeText[this.state.backHoldTime / 1000]}
@@ -253,7 +253,7 @@ class ConfigAdv extends Component {
 									<View>
 										<View style={[styles.box, styles.hasSubBox]}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												密码锁定
@@ -279,7 +279,7 @@ class ConfigAdv extends Component {
 											/>
 										</View>
 										<View>
-											<Text style={[styles.itemSub, { fontSize: this.props.baseFontSize * .9 }]}>当登录密码连续输错时，锁定应用。出于安全考虑建议开启。</Text>
+											<Text style={[styles.itemSub, { fontSize: style.baseFontSize * .9 }]}>当登录密码连续输错时，锁定应用。出于安全考虑建议开启。</Text>
 										</View>
 									</View>
 								</View>
@@ -294,13 +294,13 @@ class ConfigAdv extends Component {
 										<View style={styles.border}></View>
 										<View style={[styles.box]}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												试错次数
 											</Text>
 											<Text
-												style={[styles.item, styles.itemRight, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, styles.itemRight, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{this.state.errNum}次
@@ -322,13 +322,13 @@ class ConfigAdv extends Component {
 										<View style={styles.border}></View>
 										<View style={[styles.box]}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												锁定时长
 											</Text>
 											<Text
-												style={[styles.item, styles.itemRight, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, styles.itemRight, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{this.lockTimeText[+this.state.errTime / (1000 * 60 * 60)]}
@@ -352,14 +352,14 @@ class ConfigAdv extends Component {
 								<View>
 									<View style={[styles.box, styles.hasSubBox]}>
 										<Text
-											style={[styles.item, { fontSize: this.props.baseFontSize }]}
+											style={[styles.item, { fontSize: style.baseFontSize }]}
 											numberOfLines={1}
 										>
 											应用初始化
 										</Text>
 									</View>
 									<View>
-										<Text style={[styles.itemSub, { fontSize: this.props.baseFontSize * .9 }]}>删除所有数据及配置。</Text>
+										<Text style={[styles.itemSub, { fontSize: style.baseFontSize * .9 }]}>删除所有数据及配置。</Text>
 									</View>
 								</View>
 							);
@@ -471,7 +471,7 @@ class ConfigAdv extends Component {
 	lockNumArr = [3, 5, 10, 30, 50];
 	backHoldTimeArr = [10, 30, 60, 180, 300, 600];
 	render() {
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View style={style.container}>
 				<View>
@@ -497,7 +497,7 @@ class ConfigAdv extends Component {
 										item.children() :
 										<View style={styles.box}>
 											<Text
-												style={[styles.item, { fontSize: this.props.baseFontSize }]}
+												style={[styles.item, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{item.name}
@@ -515,7 +515,7 @@ class ConfigAdv extends Component {
 						}
 						initialNumToRender={20}
 						keyExtractor={(item, index) => {
-							return index;
+							return index.toString();
 						}}
 						sections={this.state.sections}
 						getItemLayout={(data, index) => {
@@ -545,10 +545,10 @@ class ConfigAdv extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>应用初始化</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>应用初始化</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[styles.warningText, { fontSize: this.props.baseFontSize }]}>应用初始化后，除了导出的备份文件会保留，其他数据将会全部清除且无法恢复。</Text>
-							<Text style={[{ fontSize: this.props.baseFontSize }]}>确定要将应用初始化吗？</Text>
+							<Text style={[styles.warningText, { fontSize: style.baseFontSize }]}>应用初始化后，除了导出的备份文件会保留，其他数据将会全部清除且无法恢复。</Text>
+							<Text style={[{ fontSize: style.baseFontSize }]}>确定要将应用初始化吗？</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -559,7 +559,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -577,7 +577,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[this.state.resetAppBtnDisabled ? style.btnDisabledColor : style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[this.state.resetAppBtnDisabled ? style.btnDisabledColor : style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>{this.state.resetAppBtnText}</Text>
 							</TouchableHighlight>
 						</View>
@@ -593,9 +593,9 @@ class ConfigAdv extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>应用初始化成功</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>应用初始化成功</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[{ fontSize: this.props.baseFontSize }]}>点击确定按钮后应用将会关闭，请重新启动应用。</Text>
+							<Text style={[{ fontSize: style.baseFontSize }]}>点击确定按钮后应用将会关闭，请重新启动应用。</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -607,7 +607,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>{this.state.resetAppBtnText}</Text>
 							</TouchableHighlight>
 						</View>
@@ -650,7 +650,7 @@ class ConfigAdv extends Component {
 												style={[styles.radioDefault, isCheck ? styles.radioCheck : '']}
 											/>
 											<Text
-												style={[styles.radioText, { fontSize: this.props.baseFontSize }]}
+												style={[styles.radioText, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{this.backHoldTimeText[val]}
@@ -669,7 +669,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 						</View>
@@ -707,7 +707,7 @@ class ConfigAdv extends Component {
 												style={[styles.radioDefault, isCheck ? styles.radioCheck : '']}
 											/>
 											<Text
-												style={[styles.radioText, { fontSize: this.props.baseFontSize }]}
+												style={[styles.radioText, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{val}次
@@ -726,7 +726,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 						</View>
@@ -768,7 +768,7 @@ class ConfigAdv extends Component {
 												style={[styles.radioDefault, isCheck ? styles.radioCheck : '']}
 											/>
 											<Text
-												style={[styles.radioText, { fontSize: this.props.baseFontSize }]}
+												style={[styles.radioText, { fontSize: style.baseFontSize }]}
 												numberOfLines={1}
 											>
 												{this.lockTimeText[val]}
@@ -787,7 +787,7 @@ class ConfigAdv extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 						</View>
@@ -805,12 +805,12 @@ class ConfigAdv extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>申请权限</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>申请权限</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
 							{this.state.hasPermission == false ?
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>获取权限失败，自动备份无法开启。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>获取权限失败，自动备份无法开启。</Text>
 								:
-								<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>自动备份功能需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
+								<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>自动备份功能需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
 							}
 						</ScrollView>
 						{
@@ -824,7 +824,7 @@ class ConfigAdv extends Component {
 										}}
 									>
 										<Text
-											style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+											style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 										>关闭</Text>
 									</TouchableHighlight>
 								</View>
@@ -838,7 +838,7 @@ class ConfigAdv extends Component {
 										}}
 									>
 										<Text
-											style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+											style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 										>取消</Text>
 									</TouchableHighlight>
 									<TouchableHighlight
@@ -867,7 +867,7 @@ class ConfigAdv extends Component {
 										}}
 									>
 										<Text
-											style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+											style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 										>确定</Text>
 									</TouchableHighlight>
 								</View>
@@ -881,7 +881,6 @@ class ConfigAdv extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

@@ -8,8 +8,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 export default class ListModalCenter extends Component {
 	render() {
-		return (
-			<View style={[styles.modalCenterBox, {height: this.props.appHeight, display: this.props.show?'flex' : 'none'}]}>
+		return this.props.show ? (
+			<View style={[styles.modalCenterBox, { height: this.props.appHeight }]}>
 				<View
 					style={styles.modalCenterView}
 				>
@@ -25,7 +25,8 @@ export default class ListModalCenter extends Component {
 					}
 				</View>
 			</View>
-		);
+		)
+		: null;
 	}
 }
 

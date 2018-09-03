@@ -15,18 +15,17 @@ export default class Tips extends Component {
 			isShow: false,
 		};
 	}
-	clearOnOff = false;
 	componentWillMount() {
 		this.props.isShow && this.showModal(this.props.text, this.props.timer);
 	}
 	componentWillReceiveProps(props) {
-		props.isShow && !props.once && this.showModal(props.text, props.timer);
-		if (props.clear && !this.clearOnOff && props.once) {
-			this.clearOnOff = true;
+		props.isShow && this.showModal(props.text, props.timer);
+		if (props.clear) {
 			this.setState({
 				isShow: false,
 				text: '',
 			});
+			this.props.callState && this.props.callState(true);
 		};
 	}
 	componentWillUnmount() {
@@ -47,18 +46,19 @@ export default class Tips extends Component {
 		}, timer);
 	}
 	render() {
-		return (
+		return this.state.isShow ? (
 			<View
-				style={[styles.copyModal, { display: this.state.isShow ? 'flex' : 'none', bottom: this.props.bottom ? this.props.bottom : 30}]}
+				style={[styles.copyModal, { bottom: this.props.bottom ? this.props.bottom : 30}]}
 			>
 				<View>
 					<Text
-						style={[styles.copyModalText, { fontSize: this.props.baseFontSize * .9 }]}
+						style={[styles.copyModalText, { fontSize: style.baseFontSize * .9 }]}
 					>{this.state.text}</Text>
 					<View style={[style.absoluteBox, styles.copyModalBg]}></View>
 				</View>
 			</View>
-		);
+		)
+		: null;
 	}
 }
 

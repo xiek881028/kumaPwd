@@ -8,7 +8,7 @@ kumaPwd是app账号匣的项目源码。
 
 项目基于react-naive开发，采用javascript编写，并非传统的java。其优势在于一次编写多端运行，一套代码可以同时生成android版和IOS版，降低开发成本。并且用户体验相比web app有着质的飞跃。但是因为作者没有IOS设备，以及因为IOS系统并没有文件管理器的概念，所以账号匣暂无IOS版。
 
-尽管react-native有诸多优势，但其运行效率相比原生应用依旧有着一定的差距。加上目前react-native尚未发布正式版。账号匣开始开发时，react-native的版本仅为0.52.0。再加上作者是第一次使用react-native，所以账号匣必然有很多不完善的地方，希望各位能够谅解。
+尽管react-native有诸多优势，但其运行效率相比原生应用依旧有着一定的差距。加上目前react-native尚未发布正式版。账号匣基于的react-native的版本为0.55.4。如果账号匣有不完善的地方，希望各位能够谅解。
 
 如果您发现项目有bug，有好的建议或意见，可以在github上提issues给我，或者发邮件到xk285985285@qq.com。
 
@@ -28,8 +28,7 @@ kumaPwd是app账号匣的项目源码。
 - 请先自行搭建react-native运行环境。相关教程在网上有很多，比如[`React Native 中文网`](https://reactnative.cn/docs/0.51/getting-started.html)。
 - clone项目源码到根目录。
 - 用命令行工具运行yarn（请不要使用npm，在目前的版本中会导致bug）。
-- 如果您也是采用react-native 0.52.0构建的工程，在当前版本有几个已知bug需要您手动处理。
-- - 项目采用的第三方图标库react-native-vector-icons在编译时会报错，需要删除./node_modules/react-native/local-cli/core/\_\_fixtures\_\_/files/package.json。
+- 如果您也是采用react-native 0.55.4构建的工程，在当前版本有几个已知bug需要您手动处理。
 - - 目前的react-native的Modal组件表现有些不完美，需要更改./node_modules/react-native/Libraries/Modal/Modal.js里第217行的“white”为“transparent”。
 - 将android下的gradle.properties.sample重命名为gradle.properties。
 - 将src/assets/下的appCommonFn.js.sample重命名为appCommonFn.js。
@@ -94,7 +93,7 @@ javascript调用java包的配置文件。
 
 代码开源前进行了微调，出于安全考虑，删除了密码加密部分的代码。它位于assets/appCommonFn.js，文件里的mathLoginPwd方法与mathDataPwd需要您自己实现。
 
-因为账号匣开发时react-native版本是0.52.0，所以不排除用后续react-native版本构建项目时会导致项目无法运行（作者有时间时会对项目进行更新，尽量保证项目能在最新版react-naitve下正常运行）。
+因为账号匣开发时react-native版本是0.55.4，所以不排除用后续react-native版本构建项目时会导致项目无法运行（作者有时间时会对项目进行更新，尽量保证项目能在最新版react-naitve下正常运行）。
 
 ## 许可证（License）
 

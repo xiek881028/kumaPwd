@@ -26,8 +26,6 @@ import ShareAndroid from '../NativeModules/ShareAndroid';
 
 //加密组件 crypto-js
 import CryptoJS from 'crypto-js';
-//生成唯一id uuid
-import uuid from 'uuid/v1';
 
 //Css
 import style from '../css/common.js';
@@ -162,9 +160,9 @@ class dataBackUp extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>申请权限</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>申请权限</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>为了能够正常的导入导出，应用需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
+							<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>为了能够正常的导入导出，应用需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -176,7 +174,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -200,7 +198,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>确定</Text>
 							</TouchableHighlight>
 						</View>
@@ -208,11 +206,10 @@ class dataBackUp extends Component {
 				</ModalBase>
 			);
 		}
-		if (this.props.baseFontSize == null || !this.state.readly) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View style={[style.container, styles.fileBox]}>
 				<File
-					baseFontSize={this.props.baseFontSize}
 					navigation={this.props.navigation}
 					ref="file"
 					isRoot={this.isRoot.bind(this)}
@@ -234,7 +231,7 @@ class dataBackUp extends Component {
 						}}
 					>
 						<Text
-							style={[style.btnColor, styles.bottomBtnText, { fontSize: this.props.baseFontSize * .8 }]}
+							style={[style.btnColor, styles.bottomBtnText, { fontSize: style.baseFontSize * .8 }]}
 						>导出到这里</Text>
 					</TouchableHighlight>
 					<TouchableHighlight
@@ -248,7 +245,7 @@ class dataBackUp extends Component {
 						}}
 					>
 						<Text
-							style={[this.state.isRoot ? style.btnSubDisabledColor : style.btnSubColor, styles.bottomBtnText, { fontSize: this.props.baseFontSize * .8 }]}
+							style={[this.state.isRoot ? style.btnSubDisabledColor : style.btnSubColor, styles.bottomBtnText, { fontSize: style.baseFontSize * .8 }]}
 						>返回上一层</Text>
 					</TouchableHighlight>
 				</View>
@@ -259,10 +256,10 @@ class dataBackUp extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>导出数据</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>导出数据</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[styles.warningText, { fontSize: this.props.baseFontSize }]}>请牢记登录密码，否则导出的备份文件无法解密。</Text>
-							<Text style={[{ fontSize: this.props.baseFontSize }]}>确定导出数据吗？</Text>
+							<Text style={[styles.warningText, { fontSize: style.baseFontSize }]}>请牢记登录密码，否则导出的备份文件无法解密。</Text>
+							<Text style={[{ fontSize: style.baseFontSize }]}>确定导出数据吗？</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -273,7 +270,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -302,7 +299,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>确定</Text>
 							</TouchableHighlight>
 						</View>
@@ -312,7 +309,7 @@ class dataBackUp extends Component {
 					isShow={this.state.tipIsShow}
 					text={this.state.tipText}
 					timer={2000}
-					baseFontSize={this.props.baseFontSize}
+					baseFontSize={style.baseFontSize}
 					callState={state => {
 						this.setState({
 							tipIsShow: false,
@@ -328,7 +325,7 @@ class dataBackUp extends Component {
 						style={style.modalBox}
 					>
 						<Text
-							style={[style.modalTitle, styles.modalTitle2, { fontSize: this.props.baseFontSize * 1.1 }]}
+							style={[style.modalTitle, styles.modalTitle2, { fontSize: style.baseFontSize * 1.1 }]}
 						>{this.state.fileName}</Text>
 						<ScrollView>
 							<TouchableHighlight
@@ -345,7 +342,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[styles.modalBtnText, style.btnSubColor, { fontSize: this.props.baseFontSize * .9 }]}
+									style={[styles.modalBtnText, style.btnSubColor, { fontSize: style.baseFontSize * .9 }]}
 								>全部导入</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -362,7 +359,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[styles.modalBtnText, style.btnSubColor, { fontSize: this.props.baseFontSize * .9 }]}
+									style={[styles.modalBtnText, style.btnSubColor, { fontSize: style.baseFontSize * .9 }]}
 								>仅导入缺失的账号</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -376,7 +373,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[styles.modalBtnText, style.btnSubColor, { fontSize: this.props.baseFontSize * .9 }]}
+									style={[styles.modalBtnText, style.btnSubColor, { fontSize: style.baseFontSize * .9 }]}
 								>重命名文件</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -390,7 +387,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[styles.modalBtnText, style.btnSubColor, { fontSize: this.props.baseFontSize * .9 }]}
+									style={[styles.modalBtnText, style.btnSubColor, { fontSize: style.baseFontSize * .9 }]}
 								>发送文件</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -404,7 +401,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[styles.modalBtnText, style.btnSubColor, { fontSize: this.props.baseFontSize * .9 }]}
+									style={[styles.modalBtnText, style.btnSubColor, { fontSize: style.baseFontSize * .9 }]}
 								>删除文件</Text>
 							</TouchableHighlight>
 						</ScrollView>
@@ -417,9 +414,9 @@ class dataBackUp extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>删除文件</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>删除文件</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[{ fontSize: this.props.baseFontSize }]}>确定删除数据备份文件 “{this.state.fileName}” 吗？</Text>
+							<Text style={[{ fontSize: style.baseFontSize }]}>确定删除数据备份文件 “{this.state.fileName}” 吗？</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -430,7 +427,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -452,7 +449,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>确定</Text>
 							</TouchableHighlight>
 						</View>
@@ -465,14 +462,14 @@ class dataBackUp extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>重命名文件</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>重命名文件</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
 							<InputView
 								placeholder='点这里输入文件名称'
 								getText={this.getText.bind(this)}
 								value={this.state.fileName}
 								autoFocus={true}
-								fontSize={this.props.baseFontSize}
+								fontSize={style.baseFontSize}
 							/>
 						</ScrollView>
 						<View style={style.modalFooter}>
@@ -484,7 +481,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -522,7 +519,7 @@ class dataBackUp extends Component {
 								}}
 							>
 								<Text
-									style={[this.state.renameDisabled ? style.btnDisabledColor : style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[this.state.renameDisabled ? style.btnDisabledColor : style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>确定</Text>
 							</TouchableHighlight>
 						</View>
@@ -535,7 +532,6 @@ class dataBackUp extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

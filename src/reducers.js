@@ -9,8 +9,9 @@ import {
 	ACCOUNT_TO_TOP,
 	EDIT_FONT_SIZE,
 	INIT_FONT_SIZE,
+	EDIT_COLOR,
+	INIT_COLOR,
 } from './actionTypes';
-import { initAccountList } from './actions';
 
 // accounts
 let {initList, indexList} = resetInitList();
@@ -195,10 +196,30 @@ function AppFontSize (state, action){
 	}
 }
 
+let AppBaseColor = null;
+
+function AppColor (state, action){
+	switch (action.type){
+		case EDIT_COLOR:
+			AppBaseColor = action.color;
+			storage.save({
+				key: 'color',
+				data: action.color,
+			});
+			return {...action}
+		case INIT_COLOR:
+			AppBaseColor = action.color;
+			return {...action}
+		default:
+			return {type: 'DEFAULT', color: AppBaseColor}
+	}
+}
+
 //注意执行顺序
 export default combineReducers({
 	AccountToTop,
 	AccountList,
 	SearchAccountById,
 	AppFontSize,
+	AppColor,
 });

@@ -19,6 +19,7 @@ import {
 	mkdirInit,
 	getTimerFileName,
 	getPwd,
+	setColor,
 } from '../assets/appCommonFn';
 
 //加密组件 crypto-js
@@ -50,7 +51,7 @@ class Home extends Component {
 	}
 	autoBeiFlag = false;
 	readly = false;
-	aotuSave = async (readly) => {
+	autoSave = async (readly) => {
 		let dirInit = (await mkdirInit());
 		let fileFile = `${dirInit.rootFile}/beifen`;
 		storage.getAllDataForKey('accountList').then(accounts => {
@@ -93,7 +94,7 @@ class Home extends Component {
 				canWrite = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
 			}
 			if (canRead && canWrite) {
-				this.aotuSave(readly);
+				this.autoSave(readly);
 			} else {
 				this.setState({
 					hasPermission: false,
@@ -218,18 +219,18 @@ class Home extends Component {
 								});
 							});
 						} else {
-							this.aotuSave(this.readly);
+							this.autoSave(this.readly);
 						}
 					}}
 				>
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>申请权限</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>申请权限</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>自动备份功能当前已开启。</Text>
-							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>该功能需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
-							<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>点击取消或拒绝所需权限将会关闭自动备份功能。</Text>
+							<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>自动备份功能当前已开启。</Text>
+							<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>该功能需要获取您设备的存储权限。请同意应用获取相关权限。</Text>
+							<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>点击取消或拒绝所需权限将会关闭自动备份功能。</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -240,7 +241,7 @@ class Home extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnSubColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -260,7 +261,7 @@ class Home extends Component {
 								}}
 							>
 								<Text
-									style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+									style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 								>确定</Text>
 							</TouchableHighlight>
 						</View>
@@ -268,7 +269,7 @@ class Home extends Component {
 				</ModalBase>
 			);
 		}
-		if (!this.state.readly || this.props.baseFontSize == null) return null;
+		if (!this.state.readly) return null;
 		const { navigate } = this.props.navigation;
 		// let sections = [
 		// 		{key: 'A', data: [
@@ -289,7 +290,7 @@ class Home extends Component {
 					// sections={sections}
 					navigation={this.props.navigation}
 					callSetBtn={this.callSetBtn.bind(this)}
-					baseFontSize={this.props.baseFontSize}
+					baseFontSize={style.baseFontSize}
 				/>
 				<TouchableHighlight
 					style={[styles.addBox, style.btnBg]}
@@ -314,7 +315,7 @@ class Home extends Component {
 					isShow={this.state.returnTipsIsShow}
 					text={this.state.returnTipsText}
 					timer={2000}
-					baseFontSize={this.props.baseFontSize}
+					baseFontSize={style.baseFontSize}
 					callState={(state) => {
 						this.setState({
 							returnTipsIsShow: false,
@@ -330,7 +331,6 @@ class Home extends Component {
 const setProps = (state) => {
 	return {
 		account: state.AccountList,
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

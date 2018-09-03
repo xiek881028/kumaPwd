@@ -18,7 +18,7 @@ let storage = new Storage({
 
 global.storage = storage;
 global.APP_NAME = '账号匣';
-global.VERSION = 'v1.1.0';
+global.VERSION = 'v1.2.0';
 global.OS = Platform.OS;
 
 export default class App extends Component {

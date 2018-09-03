@@ -38,8 +38,7 @@ class DetailsItem extends Component {
 		this.state = { ...props };
 	}
 	render() {
-		if (!this.props.item.value.length) return null;
-		return (
+		return this.props.item.value.length ? (
 			<TouchableHighlight
 				underlayColor='#d9d9d9'
 				onPress={() => {
@@ -50,15 +49,16 @@ class DetailsItem extends Component {
 					style={styles.tipsLine}
 				>
 					<View style={styles.LineHead}>
-						<Text style={[styles.tipsLineLabel, { fontSize: this.props.baseFontSize }]}>{this.props.item.key}：</Text>
+						<Text style={[styles.tipsLineLabel, { fontSize: style.baseFontSize }]}>{this.props.item.key}：</Text>
 						<Text
-							style={[styles.copy, { fontSize: this.props.baseFontSize * .9 }]}
+							style={[styles.copy, { fontSize: style.baseFontSize * .9 }]}
 						>点我复制{this.props.item.key}</Text>
 					</View>
-					<Text style={[styles.tipsLineVal, { fontSize: this.props.baseFontSize * 1.2 }]}>{this.props.item.value}</Text>
+					<Text style={[styles.tipsLineVal, { fontSize: style.baseFontSize * 1.2 }]}>{this.props.item.value}</Text>
 				</View>
 			</TouchableHighlight>
-		);
+		)
+		: null;
 	}
 }
 
@@ -123,7 +123,6 @@ class Deatils extends Component {
 		})(),
 	});
 	delAccount() {
-		console.log('delete');
 		this.refs.modal.setModal(true);
 		this.setState({
 			overDel: true,
@@ -154,7 +153,7 @@ class Deatils extends Component {
 		});
 	}
 	render() {
-		if (this.props.baseFontSize == null || !this.state.readly || !this.props.accountDetails.returnData.id || this.state.data.id != this.props.accountDetails.returnData.id) return null;
+		if (!this.state.readly || !this.props.accountDetails.returnData.id || this.state.data.id != this.props.accountDetails.returnData.id) return null;
 		const { navigate } = this.props.navigation;
 		let data = this.props.accountDetails.returnData;
 		let _data = [];
@@ -173,7 +172,7 @@ class Deatils extends Component {
 				<ScrollView style={style.container}>
 					<View style={[styles.contentBox, styles.topContent]}>
 						<View style={styles.detailsTitle}>
-							<Text style={[styles.detailsTitleText, { fontSize: this.props.baseFontSize * 1.8 }]}>
+							<Text style={[styles.detailsTitleText, { fontSize: style.baseFontSize * 1.8 }]}>
 								{data.name}
 							</Text>
 						</View>
@@ -182,10 +181,10 @@ class Deatils extends Component {
 								item={item}
 								index={index}
 								copyStr={this.copyStr.bind(this)}
-								baseFontSize={this.props.baseFontSize}
+								baseFontSize={style.baseFontSize}
 							/>}
 							keyExtractor={(item, index) => {
-								return index;
+								return index.toString();
 							}}
 							ItemSeparatorComponent={() => <View style={styles.detailsBorder}></View>}
 							data={_data}
@@ -202,12 +201,12 @@ class Deatils extends Component {
 							<View
 								style={styles.collectionTxtBox}
 							>
-								<Text style={[styles.collectionTitle, { fontSize: this.props.baseFontSize }]}>{data.star ? '已收藏' : '收藏'}</Text>
-								<Text style={[styles.collectionCaption, { fontSize: this.props.baseFontSize * .8 }]}>收藏的账号会在列表中置顶显示</Text>
+								<Text style={[styles.collectionTitle, { fontSize: style.baseFontSize }]}>{data.star ? '已收藏' : '收藏'}</Text>
+								<Text style={[styles.collectionCaption, { fontSize: style.baseFontSize * .8 }]}>收藏的账号会在列表中置顶显示</Text>
 							</View>
 							<FontAwesome
 								name={data.star ? 'star' : 'star-o'}
-								style={[styles.collectionIcon, { fontSize: this.props.baseFontSize * 1.6 }]}
+								style={[styles.collectionIcon, { fontSize: style.baseFontSize * 1.6 }]}
 							/>
 						</View>
 					</TouchableHighlight>
@@ -225,7 +224,7 @@ class Deatils extends Component {
 						underlayColor={style.btnHeightBg.backgroundColor}
 						style={[styles.btnBox, style.btnBg]}
 					>
-						<Text style={[styles.btn, style.btnColor, { fontSize: this.props.baseFontSize * 1.125 }]}>编辑</Text>
+						<Text style={[styles.btn, style.btnColor, { fontSize: style.baseFontSize * 1.125 }]}>编辑</Text>
 					</TouchableHighlight>
 					<TouchableHighlight
 						onPress={() => {
@@ -234,7 +233,7 @@ class Deatils extends Component {
 						underlayColor={style.btnSubHeightBg.backgroundColor}
 						style={[styles.btnBox, style.btnSubBg]}
 					>
-						<Text style={[styles.btn, style.btnSubColor, { fontSize: this.props.baseFontSize * 1.125 }]}>删除</Text>
+						<Text style={[styles.btn, style.btnSubColor, { fontSize: style.baseFontSize * 1.125 }]}>删除</Text>
 					</TouchableHighlight>
 				</ScrollView>
 				<ModalBase
@@ -244,9 +243,9 @@ class Deatils extends Component {
 					<View
 						style={style.modalBox}
 					>
-						<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>删除账号</Text>
+						<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>删除账号</Text>
 						<ScrollView contentContainerStyle={[style.modalContent]}>
-							<Text style={[{ fontSize: this.props.baseFontSize }]}>{`账号删除后将无法找回，确定要删除“${this.pruneStr(data.name, 10)}”吗？`}</Text>
+							<Text style={[{ fontSize: style.baseFontSize }]}>{`账号删除后将无法找回，确定要删除“${this.pruneStr(data.name, 10)}”吗？`}</Text>
 						</ScrollView>
 						<View style={style.modalFooter}>
 							<TouchableHighlight
@@ -257,7 +256,7 @@ class Deatils extends Component {
 								}}
 							>
 								<Text
-									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 								>取消</Text>
 							</TouchableHighlight>
 							<TouchableHighlight
@@ -266,7 +265,7 @@ class Deatils extends Component {
 								onPress={this.delAccount.bind(this)}
 							>
 								<Text
-									style={[style.modalFooterBtn, styles.delFooterBtnRight, { fontSize: this.props.baseFontSize }]}
+									style={[style.modalFooterBtn, styles.delFooterBtnRight, { fontSize: style.baseFontSize }]}
 								>删除</Text>
 							</TouchableHighlight>
 						</View>
@@ -276,7 +275,7 @@ class Deatils extends Component {
 					isShow={this.state.copyModalIsShow}
 					text={this.state.copyModalTxt}
 					timer={2500}
-					baseFontSize={this.props.baseFontSize}
+					baseFontSize={style.baseFontSize}
 					callState={(state) => {
 						this.setState({
 							copyModalIsShow: false,
@@ -292,7 +291,6 @@ class Deatils extends Component {
 const setProps = (state) => {
 	return {
 		accountDetails: state.SearchAccountById,
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

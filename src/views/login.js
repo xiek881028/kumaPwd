@@ -86,9 +86,9 @@ class InputKeyboard extends Component {
 						underlayColor='rgba(0, 0, 0, .1)'
 						onPress={this.getInput.bind(this, i)}
 					>
-						<Text style={[styles.InputKeyboardText, { fontSize: this.props.baseFontSize * 1.6 }]}>{
+						<Text style={[styles.InputKeyboardText, { fontSize: style.baseFontSize * 1.6 }]}>{
 							this.keyboardArr[i] == 'del' ?
-								<Feather name='delete' style={[styles.InputKeyboardText, { fontSize: this.props.baseFontSize * 1.6 }]} />
+								<Feather name='delete' style={[styles.InputKeyboardText, { fontSize: style.baseFontSize * 1.6 }]} />
 								: this.keyboardArr[i]
 						}</Text>
 					</TouchableHighlight>
@@ -299,7 +299,6 @@ class Login extends Component {
 					}
 				}
 			} catch (err) {
-				console.log(err);
 				this.setState({
 					readly,
 					mode: 'register',
@@ -719,7 +718,7 @@ class Login extends Component {
 		});
 	}
 	render() {
-		if (!this.state.readly || this.props.baseFontSize == null) return null;
+		if (!this.state.readly) return null;
 		return (
 			<View style={[style.container]}>
 				<StatusBar
@@ -734,7 +733,7 @@ class Login extends Component {
 					<View style={[style.absoluteBox, styles.loginBox]}>
 						<View style={styles.topHalfBox}>
 							<View style={styles.topHalf}>
-								<Text style={[styles.titleText, this.state.titleTextMode == 'success' ? styles.titleTextSuccess : this.state.titleTextMode == 'error' ? styles.titleTextErr : '', { fontSize: this.props.baseFontSize * 1.25 }]}>
+								<Text style={[styles.titleText, this.state.titleTextMode == 'success' ? styles.titleTextSuccess : this.state.titleTextMode == 'error' ? styles.titleTextErr : '', { fontSize: style.baseFontSize * 1.25 }]}>
 									{this.state.titleText}
 								</Text>
 								<InputPwd
@@ -755,9 +754,9 @@ class Login extends Component {
 												<View style={styles.forgotPwdBox}>
 													<Feather
 														name='help-circle'
-														style={[styles.forgotPwdIcon, { fontSize: this.props.baseFontSize * 1.125 }]}
+														style={[styles.forgotPwdIcon, { fontSize: style.baseFontSize * 1.125 }]}
 													/>
-													<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>我有备份文件</Text>
+													<Text style={[styles.forgotPwdText, { fontSize: style.baseFontSize }]}>我有备份文件</Text>
 												</View>
 											</TouchableHighlight>
 										</View>
@@ -774,9 +773,9 @@ class Login extends Component {
 													<View style={styles.forgotPwdBox}>
 														<Feather
 															name='help-circle'
-															style={[styles.forgotPwdIcon, { fontSize: this.props.baseFontSize * 1.125 }]}
+															style={[styles.forgotPwdIcon, { fontSize: style.baseFontSize * 1.125 }]}
 														/>
-														<Text style={[styles.forgotPwdText, { fontSize: this.props.baseFontSize }]}>忘记密码</Text>
+														<Text style={[styles.forgotPwdText, { fontSize: style.baseFontSize }]}>忘记密码</Text>
 													</View>
 												</TouchableHighlight>
 											</View>
@@ -784,7 +783,7 @@ class Login extends Component {
 								}
 								{
 									this.state.titleSubText ?
-										<Text style={[styles.titleSubText, this.state.titleSubTextMode == 'success' ? styles.titleTextSuccess : '', { fontSize: this.props.baseFontSize }]}>{this.state.titleSubText}</Text>
+										<Text style={[styles.titleSubText, this.state.titleSubTextMode == 'success' ? styles.titleTextSuccess : '', { fontSize: style.baseFontSize }]}>{this.state.titleSubText}</Text>
 										: null
 								}
 							</View>
@@ -798,7 +797,7 @@ class Login extends Component {
 											style={styles.fingerprintIcon}
 										/>
 										<Text
-											style={{ fontSize: this.props.baseFontSize }}
+											style={{ fontSize: style.baseFontSize }}
 										>
 											指纹识别已开启
 										</Text>
@@ -809,7 +808,7 @@ class Login extends Component {
 						<InputKeyboard
 							style={styles.InputKeyboard}
 							getKeybordVal={this.getKeybordVal.bind(this)}
-							baseFontSize={this.props.baseFontSize}
+							baseFontSize={style.baseFontSize}
 						/>
 						{this.state.mode == 'register' ?
 							<ModalBase
@@ -819,9 +818,9 @@ class Login extends Component {
 								<View
 									style={style.modalBox}
 								>
-									<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>提示</Text>
+									<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>提示</Text>
 									<ScrollView style={[style.modalContent]}>
-										<Text style={[{ fontSize: this.props.baseFontSize }]}>如果您有{APP_NAME}的备份文件，请在设置密码后，在设置→数据备份中选择备份文件进行导入。</Text>
+										<Text style={[{ fontSize: style.baseFontSize }]}>如果您有{APP_NAME}的备份文件，请在设置密码后，在设置→数据备份中选择备份文件进行导入。</Text>
 									</ScrollView>
 									<View style={style.modalFooter}>
 										<TouchableHighlight
@@ -833,7 +832,7 @@ class Login extends Component {
 											}}
 										>
 											<Text
-												style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+												style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 											>确定</Text>
 										</TouchableHighlight>
 									</View>
@@ -853,24 +852,24 @@ class Login extends Component {
 								<View
 									style={style.modalBox}
 								>
-									<Text style={[style.modalTitle, { fontSize: this.props.baseFontSize * 1.2 }]}>提示</Text>
+									<Text style={[style.modalTitle, { fontSize: style.baseFontSize * 1.2 }]}>提示</Text>
 									{
 										this.state.isExportList ?
 											<ScrollView contentContainerStyle={[style.modalContent]}>
-												<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>账号列表已成功导出到 {this.state.isExportListPath} 。</Text>
-												<Text style={[styles.warningText, { fontSize: this.props.baseFontSize }]}>您可以点击发送按钮发送列表文件到其它应用中查看。</Text>
+												<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>账号列表已成功导出到 {this.state.isExportListPath} 。</Text>
+												<Text style={[styles.warningText, { fontSize: style.baseFontSize }]}>您可以点击发送按钮发送列表文件到其它应用中查看。</Text>
 											</ScrollView>
 											:
 											this.state.hasPermission == false ?
 												<ScrollView contentContainerStyle={[style.modalContent]}>
-													<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>应用未能成功获取相应权限，导出失败。</Text>
+													<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>应用未能成功获取相应权限，导出失败。</Text>
 												</ScrollView>
 												:
 												<ScrollView contentContainerStyle={[style.modalContent]}>
-													<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>十分抱歉，应用无法提供密码找回功能。</Text>
-													<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>但我们可以帮您导出一份账号列表，您可以根据列表手动找回密码。</Text>
-													<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>导出列表功能需要获取您设备的存储权限。如果弹出权限申请，请同意。</Text>
-													<Text style={[styles.modalText, { fontSize: this.props.baseFontSize }]}>确定导出列表吗？</Text>
+													<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>十分抱歉，应用无法提供密码找回功能。</Text>
+													<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>但我们可以帮您导出一份账号列表，您可以根据列表手动找回密码。</Text>
+													<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>导出列表功能需要获取您设备的存储权限。如果弹出权限申请，请同意。</Text>
+													<Text style={[styles.modalText, { fontSize: style.baseFontSize }]}>确定导出列表吗？</Text>
 												</ScrollView>
 									}
 									{
@@ -884,7 +883,7 @@ class Login extends Component {
 													}}
 												>
 													<Text
-														style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+														style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 													>取消</Text>
 												</TouchableHighlight>
 												<TouchableHighlight
@@ -899,7 +898,7 @@ class Login extends Component {
 													}}
 												>
 													<Text
-														style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+														style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 													>发送</Text>
 												</TouchableHighlight>
 											</View>
@@ -914,7 +913,7 @@ class Login extends Component {
 														}}
 													>
 														<Text
-															style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+															style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 														>关闭</Text>
 													</TouchableHighlight>
 												</View>
@@ -928,7 +927,7 @@ class Login extends Component {
 														}}
 													>
 														<Text
-															style={[style.modalFooterBtn, style.btnSubColor, { fontSize: this.props.baseFontSize }]}
+															style={[style.modalFooterBtn, style.btnSubColor, { fontSize: style.baseFontSize }]}
 														>取消</Text>
 													</TouchableHighlight>
 													<TouchableHighlight
@@ -960,7 +959,7 @@ class Login extends Component {
 														}}
 													>
 														<Text
-															style={[style.btnColor, style.modalFooterBtn, { fontSize: this.props.baseFontSize }]}
+															style={[style.btnColor, style.modalFooterBtn, { fontSize: style.baseFontSize }]}
 														>确定</Text>
 													</TouchableHighlight>
 												</View>
@@ -977,7 +976,6 @@ class Login extends Component {
 
 const setProps = (state) => {
 	return {
-		baseFontSize: state.AppFontSize.size,
 	}
 }
 

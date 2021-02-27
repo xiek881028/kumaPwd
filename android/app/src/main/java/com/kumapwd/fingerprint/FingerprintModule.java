@@ -1,7 +1,7 @@
 package com.kumapwd.fingerprint;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -28,6 +28,7 @@ public class FingerprintModule extends ReactContextBaseJavaModule {
 
     public FingerprintModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        fingerprint.init();
         myContext = reactContext;
     }
 
@@ -69,7 +70,7 @@ public class FingerprintModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void toVerification() {
-        fingerprint.startIdentify(maxTimer, new BaseFingerprint.FingerprintIdentifyListener() {
+        fingerprint.startIdentify(maxTimer, new BaseFingerprint.IdentifyListener() {
             @Override
             public void onSucceed() {
                 WritableMap event = Arguments.createMap();

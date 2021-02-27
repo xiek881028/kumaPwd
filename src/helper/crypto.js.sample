@@ -1,0 +1,85 @@
+import CryptoJS from 'crypto-js';
+
+// 加密
+export const encrypt = (data, pwd) => 'str';
+
+// 解密
+export const decrypt = (data, pwd) => 'str';
+
+// 下个版本删除 ~~~~~~~~
+// 解密v1版
+export const decryptV1 = (data, pwd) => 'str';
+// 下个版本删除 ~~~~~~~~
+
+// 保存新密码
+export const reSaveData = (data = {}, prevPwd, pwd) => {
+  return new Promise(async (resolve, reject) => {
+    let decryptPwd = '';
+    try {
+      decryptPwd = decrypt(data.pwd, prevPwd);
+    } catch (error) {
+      // 解密失败
+      reject({ error: '密码解密失败', data });
+    }
+    if (data.pwd && !decryptPwd) {
+      // 解密失败
+      return reject({ error: '密码解密失败', data });
+    }
+    try {
+      data.pwd = !data.pwd ? '' : encrypt(decryptPwd, pwd);
+      await storage.save({
+        key: 'accountList',
+        id: data.id,
+        data: data,
+      });
+      resolve();
+    } catch (error) {
+      reject({ error: '账号保存失败', data });
+    }
+  });
+};
+
+// 下个版本删除 ~~~~~~~~
+// 保存新密码v1
+export const reSaveDataV1 = (data = {}, prevPwd, pwd) => {
+  return new Promise(async (resolve, reject) => {
+    let decryptPwd = '';
+    try {
+      decryptPwd = decryptV1(data.pwd, prevPwd);
+    } catch (error) {
+      // 解密失败
+      reject({ error: '密码解密失败', data });
+    }
+    if (data.pwd && !decryptPwd) {
+      // 解密失败
+      return reject({ error: '密码解密失败', data });
+    }
+    try {
+      data.pwd = !data.pwd ? '' : encrypt(decryptPwd, pwd);
+      await storage.save({
+        key: 'accountList',
+        id: data.id,
+        data: data,
+      });
+      resolve();
+    } catch (error) {
+      reject({ error: '账号保存失败', data });
+    }
+  });
+};
+// 下个版本删除 ~~~~~~~~
+
+// 下个版本删除 ~~~~~~~~
+// 核心加密方法v1
+export const mathPwdV1 = str => 'str'
+// 下个版本删除 ~~~~~~~~
+
+// 核心加密方法
+export const mathPwd = str => 'str'
+
+export default {
+  encrypt,
+  decrypt,
+  decryptV1,
+  mathPwd,
+};

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import androidx.core.content.FileProvider;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
@@ -42,7 +43,12 @@ public class ShareModule extends ReactContextBaseJavaModule {
         Activity currentActivity = getCurrentActivity();
         File baseFile = new File(pathname);
         Intent share = new Intent(Intent.ACTION_SEND);
-        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(baseFile));
+        Uri shareUri = FileProvider.getUriForFile(
+            currentActivity,
+            "com.kumapwd.fileprovider",
+            baseFile
+        );
+        share.putExtra(Intent.EXTRA_STREAM, shareUri);
         share.setType(getMimeType(baseFile.getAbsolutePath()));
         share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

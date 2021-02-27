@@ -1,218 +1,124 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
 	StyleSheet,
 	Text,
-	TouchableHighlight,
-	BackHandler,
 	View,
 	FlatList,
 	ScrollView,
-	AppState,
+	PermissionsAndroid,
 } from 'react-native';
-
+import { CtxTheme } from './context';
+import Button from './button';
 import {
-	mkdirInit,
-	fileIsExists,
-} from '../assets/appCommonFn';
+	checkPermissionAndroid,
+} from '../helper';
 
-//android文件树获取组件
-//android独有
-import FilesAndroid from '../NativeModules/FilesAndroid';
-
-//Css
-import style from '../css/common.js';
-
-export default class FilesTree extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			rootPath: FilesAndroid.ROOT_PATH,
-			parentPath: FilesAndroid.ROOT_PATH,
-			path: FilesAndroid.ROOT_PATH,
-		};
-	}
-	// tempJson = {};
-	getFileTree = (path = '/storage/emulated/0', cb=()=>{}) => {
-		// if(this.tempJson[path] == undefined){
-		FilesAndroid.getFilesTree(path, (d) => {
-			let _arr = [];
-			if (d.flag) {
-				// let homePath = path == `${this.state.rootPath}/kumaPwd`;
-				for (let i = 0, max = d.sort.length; i < max; i++) {
-					if (d.data[d.sort[i]].name.indexOf('.') != 0) {
-						_arr.push(d.data[d.sort[i]]);
-					}
-				}
-				this.setState({
-					fileTree: _arr,
-					parentPath: d.prev,
-					path,
-				}, cb());
-				if(!_arr.length){
-					console.log('is empty');
-					this.props.emptyCb && this.props.emptyCb();
-				}
-				// this.tempJson[path] = {
-				// 	parentPath: d.prev,
-				// 	data: _arr,
-				// };
-			} else {
-				if (d.message == 'is file') {
-					console.log(d.message);
-					this.props.fileCb && this.props.fileCb({path, ...d});
-				}
-			}
-		});
-		// }else{
-		// 	this.setState({
-		// 		fileTree: this.tempJson[path].data,
-		// 		parentPath: this.tempJson[path].parentPath,
-		// 	});
-		// }
-	}
-	btnGoBack = () => {
-		// if (!this.state.parentPath.length) {
-			console.log('back');
-			this.props.navigation.goBack();
-		// } else {
-		// 	this.props.isRoot(this.state.parentPath == this.state.rootPath);
-		// 	this.getFileTree(this.state.parentPath);
-		// }
-		return true;
-	}
-	componentWillMount() {
-		fileIsExists(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`)
-		.then(d=>{
-			if(d.flag){
-				if(d.flag && d.data){
-					this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
-					this.props.isRoot && this.props.isRoot(false);
-				}else{
-					mkdirInit()
-					.then(_d=>{
-						if(!_d.flag || (_d.flag && !_d.data)){
-							this.getFileTree(FilesAndroid.ROOT_PATH);
-							this.props.isRoot && this.props.isRoot(true);
-						}else{
-							this.getFileTree(`${FilesAndroid.ROOT_PATH}/kumaPwd/beifen`);
-							this.props.isRoot && this.props.isRoot(false);
-						}
-					});
-				}
-			}
-		})
-		;
-		BackHandler.addEventListener('hardwareBackPress', this.btnGoBack);
-		AppState.addEventListener('change', this.appStateChange);
-	}
-	componentWillUnmount() {
-		console.log('销毁fileTree');
-		BackHandler.removeEventListener('hardwareBackPress', this.btnGoBack);
-		AppState.removeEventListener('change', this.appStateChange);
-	}
-	appStateChange = ()=>{
-		if(AppState.currentState == 'active'){
-			this.getFileTree(this.state.path);
-		};
-	}
-	shouldComponentUpdate(prop, state){
-		return this.state != state;
-	}
-	render() {
-		if (this.state.fileTree == undefined) return null;
-		return (
-			<View style={styles.fileTreeBox}>
-				<View style={styles.pathBox}>
+export default ({ permissionCb, paths, onClick, ignorePermission, title='当前路径：' }) => {
+	const { fontSize, backgroundColor } = useContext(CtxTheme);
+	const [hasPermission, setHasPermission] = useState(null);
+	useEffect(() => {
+		hasPermission === null && !ignorePermission && (async () => {
+			const permission = await checkPermissionAndroid([
+				PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+				PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+			]);
+			setHasPermission(permission);
+			(permissionCb ?? (() => { }))(permission);
+		})();
+	}, [hasPermission]);
+	return paths.fileTree === undefined || (hasPermission === null && !ignorePermission) ? null : (
+		<View style={styles.fileTreeBox}>
+			<View style={styles.pathBox}>
+				<Text
+					style={[styles.pathText, { fontSize: fontSize * .85 }]}
+				>
+					{title}
+				</Text>
+				<ScrollView
+					horizontal={true}
+					showsHorizontalScrollIndicator={false}
+				>
 					<Text
-						style={[styles.pathText, { fontSize: style.baseFontSize * .85 }]}
+						style={[styles.pathText, { fontSize: fontSize * .85 }]}
 					>
-						当前路径：
+						{paths.path}
 					</Text>
-					<ScrollView
-						horizontal={true}
-						showsHorizontalScrollIndicator={false}
-					>
-						<Text
-							style={[styles.pathText, { fontSize: style.baseFontSize * .85 }]}
-						>
-							{this.state.path}
-						</Text>
-					</ScrollView>
-				</View>
-				<FlatList
-					data={this.state.fileTree}
-					style={styles.list}
-					// legacyImplementation={true}
-					// enableEmptySections={true}
-					ItemSeparatorComponent={() => <View style={styles.border}></View>}
-					ListEmptyComponent={() => {
-						return (
-							<View style={styles.emptyBox}>
-								<Feather
-									name="folder"
-									style={[styles.emptyIcon, {fontSize: style.baseFontSize * 2}]}
-								/>
-								<Text
-									style={[styles.emptyText, {fontSize: style.baseFontSize}]}
-								>没有文件</Text>
-							</View>
-						);
-					}}
-					renderItem={({ item, index }) => {
-						return (
-							<TouchableHighlight
-								onPress={() => {
-									this.getFileTree(item.path, ()=>{
-										this.props.isRoot(item.path == this.state.rootPath);
-									});
-								}}
-								underlayColor='#d9d9d9'
-								style={styles.itemTouchBox}
-							>
-								<View style={styles.itemBox}>
-									<FontAwesome
-										name={item.mode == 'folder' ? 'folder' : 'file'}
-										style={[styles.fileIcon, { fontSize: style.baseFontSize * 2, color: item.mode == 'folder' ? '#fcba48' : '#a3b8cb' }]}
-									/>
-									<View style={styles.itemFileBox}>
-										<Text
-											style={[styles.itemFileName, { fontSize: style.baseFontSize }]}
-											numberOfLines={2}
-										>{item.name}</Text>
-										<Text
-											style={{ fontSize: style.baseFontSize * .8 }}
-										>{item.lastTime}</Text>
-									</View>
-									{
-										item.mode == 'folder' ?
-											<Feather
-												name='chevron-right'
-												style={[styles.icon, { fontSize: style.baseFontSize }]}
-											/>
-											: <Text style={styles.icon}></Text>
-									}
-								</View>
-							</TouchableHighlight>
-						);
-					}}
-					keyExtractor={(item, index) => {
-						return index.toString();
-					}}
-					getItemLayout={(data, index) => {
-						return ({
-							length: 50,
-							offset: (60) * index,
-							index,
-						});
-					}}
-					initialNumToRender={50}
-				/>
+				</ScrollView>
 			</View>
-		);
-	}
-}
+			<FlatList
+				data={paths.fileTree}
+				style={styles.list}
+				// legacyImplementation={true}
+				// enableEmptySections={true}
+				ItemSeparatorComponent={() => <View style={styles.border}></View>}
+				ListEmptyComponent={() => {
+					return (
+						<View style={styles.emptyBox}>
+							<Feather
+								name="folder"
+								style={[styles.emptyIcon, { fontSize: fontSize * 2 }]}
+							/>
+							<Text
+								style={[styles.emptyText, { fontSize }]}
+							>没有文件</Text>
+						</View>
+					);
+				}}
+				renderItem={({ item, index }) => {
+					return (
+						<Button
+							mode='android'
+							onPress={async () => {
+								(onClick ?? (() => { }))({ ...item, parentPath: paths.path });
+							}}
+							disabled={!!item.disabled}
+							androidColor={backgroundColor}
+							underlayColor='#d9d9d9'
+							style={styles.itemTouchBox}
+						>
+							<View style={styles.itemBox}>
+								<FontAwesome
+									name={item.mode == 'folder' ? 'folder' : 'file'}
+									style={[styles.fileIcon, { fontSize: fontSize * 2, color: item.mode == 'folder' ? '#fcba48' : '#a3b8cb' }]}
+								/>
+								<View style={styles.itemFileBox}>
+									<Text
+										style={[styles.itemFileName, { fontSize }]}
+										numberOfLines={2}
+									>{item.name}</Text>
+									<Text
+										style={[styles.timeText, { fontSize: fontSize * .8 }]}
+									>{item.lastTime}</Text>
+								</View>
+								{
+									item.mode == 'folder' ?
+										<Feather
+											name='chevron-right'
+											style={[styles.icon, { fontSize }]}
+										/>
+										: <Text style={styles.icon}></Text>
+								}
+							</View>
+						</Button>
+					);
+				}}
+				keyExtractor={(item, index) => {
+					return index.toString();
+				}}
+				getItemLayout={(data, index) => {
+					return ({
+						length: 50,
+						offset: (60) * index,
+						index,
+					});
+				}}
+				initialNumToRender={50}
+			/>
+		</View>
+	);
+};
 
 const styles = StyleSheet.create({
 	fileTreeBox: {
@@ -275,5 +181,8 @@ const styles = StyleSheet.create({
 	},
 	emptyText: {
 		color: '#999',
+	},
+	timeText: {
+		color: '#888',
 	},
 });

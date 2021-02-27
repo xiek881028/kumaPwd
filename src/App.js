@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
-import {Platform} from 'react-native';
-import Nav from './components/Routers.js';
-
-import { Provider } from 'react-redux';
-import store from './store';
-
+import React from 'react';
+import { Platform } from 'react-native';
+import Nav from './routers.js';
+import Tips from './components/tips';
+import Loading from './components/loading';
 import Storage from 'react-native-storage';
-import {
-	AsyncStorage,
-} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Provider, { CtxTheme, CtxUser, CtxTips, CtxList, CtxLoading, CtxWebdav, CtxEgg } from './components/context';
 
 let storage = new Storage({
 	size: 5000,
@@ -17,16 +14,21 @@ let storage = new Storage({
 });
 
 global.storage = storage;
-global.APP_NAME = '账号匣';
-global.VERSION = 'v1.2.0';
 global.OS = Platform.OS;
+global.CTX_THEME = CtxTheme;
+global.CTX_USER = CtxUser;
+global.CTX_TIPS = CtxTips;
+global.CTX_LIST = CtxList;
+global.CTX_LOADING = CtxLoading;
+global.CTX_WEBDAV = CtxWebdav;
+global.CTX_EGG = CtxEgg;
 
-export default class App extends Component {
-	render() {
-		return (
-			<Provider store={store}>
-				<Nav />
-			</Provider>
-		);
-	}
-}
+export default () => {
+	return (
+		<Provider>
+			<Nav />
+			<Tips />
+			<Loading />
+		</Provider>
+	);
+};

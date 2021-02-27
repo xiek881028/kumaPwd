@@ -1,58 +1,26 @@
-import React, { Component } from 'react';
+import React, { useRef, useEffect, useContext, memo } from 'react';
 import {
 	StyleSheet,
 	Text,
 	View,
 	SectionList,
-	TouchableHighlight,
-	Dimensions,
-	Keyboard,
+	KeyboardAvoidingView,
+	// Keyboard,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
+import { observer } from 'mobx-react';
+import ListContext, { CtxList } from './listContext';
+import ListScrollView from './listScrollView';
+import ListModalCenter from './listModalCenter';
+import Button from './button';
 
-import ListScrollFather from './ListScrollFather';
-
-//Css
-import style from '../css/common.js';
-
-// let doubleClick = false;//用于修复两次快速点击弹窗会打开两次的bug
-
-class ListItem extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {};
-		this.state.detailsDoubleClick = false;
-		// this.state.modalIsShow = false;
-	}
-	// touchItem() {
-	// 	!doubleClick && this.setState({
-	// 		modalIsShow: true,
-	// 	});
-	// 	doubleClick = true;
-	// }
-	// changeShow(modalIsShow) {
-	// 	doubleClick = modalIsShow;
-	// 	this.setState({
-	// 		modalIsShow: modalIsShow,
-	// 	});
-	// }
-	_isMounted = false;
-	callSetBtn() {
-		this.props.callSetBtn && this.props.callSetBtn();
-		!this._isMounted && this.setState({
-			detailsDoubleClick: false,
-		});
-	}
-	componentWillUnmount() {
-		this._isMounted = true;
-	}
-	renderSearch(str, styles = {}, key) {
+const ListItem = observer(({ isSearch, item, searchKey, onPress, prefix, index }) => {
+	const { fontSize, backgroundColor } = useContext(CTX_THEME);
+	// 高亮搜索匹配文字
+	const renderSearch = (str, styles = {}, key) => {
 		if (!key) {
 			return (
-				<Text
-					{...styles}
-				>
+				<Text {...styles}>
 					{str}
 				</Text>
 			);
@@ -62,294 +30,207 @@ class ListItem extends Component {
 			for (let i = 0, max = split.length; i < max; i++) {
 				split[i] != '' && items.push(split[i]);
 				i != max - 1 && items.push(
-					<Text key={i} style={{ color: '#c00' }}>{key}</Text>
+					<Text key={i} style={{ color: '#ff5053' }}>{key}</Text>
 				);
 			}
 			return (
-				<Text
-					{...styles}
-				>
+				<Text {...styles}>
 					{items}
 				</Text>
 			);
 		}
 	}
-	render() {
-		return (
-			<TouchableHighlight
-				// onPress={this.touchItem.bind(this)}
-				onPress={() => {
-					Keyboard.dismiss();
-					!this.state.detailsDoubleClick && this.props.navigation.navigate('details', {
-						callSetBtn: this.callSetBtn.bind(this),
-						item: this.props.item,
-					});
-					this.setState({
-						detailsDoubleClick: true,
-					});
+	return (
+		<Button
+			mode='android'
+			androidColor={backgroundColor}
+			onPress={() => {
+				onPress({
+					data: item,
+					isSearch,
+					searchKey,
+					index,
+				});
+			}}
+			underlayColor={backgroundColor}
+			style={styles.itemWrap}
+		>
+			<>
+				{(prefix ?? (() => { }))(item)}
+				{renderSearch(item.name, { style: [styles.itemName, isSearch ? styles.itemNameInSearch : '', { fontSize }], numberOfLines: 1 }, searchKey)}
+				{isSearch ?
+					renderSearch(item.account, { style: [styles.itemAccount, { fontSize }], numberOfLines: 1 }, searchKey)
+					: null
+				}
+			</>
+		</Button>
+	);
+});
+
+const ListItemHead = observer(({ section }) => {
+	const { fontSize } = useContext(CTX_THEME);
+	return section.key === '__options' ? null : (
+		<View style={styles.headBox}>
+			{section.key == 'like' ?
+				<FontAwesome
+					style={[styles.headItem, { fontSize: fontSize * .7 }]}
+					name='star'
+				/>
+				:
+				<Text style={[styles.headItem, { fontSize: fontSize * .7 }]}>{section.key}</Text>
+			}
+		</View>
+	);
+});
+
+const ListOpsItem = observer(({ item }) => {
+	const { fontSize, backgroundColor } = useContext(CTX_THEME);
+	return (
+		<Button
+			mode='android'
+			androidColor={backgroundColor}
+			onPress={item.onPress ?? (() => { })}
+			underlayColor={backgroundColor}
+			style={[styles.itemWrap, styles.itemOpsWrap]}
+		>
+			{item.icon}
+			<Text style={[styles.itemOpsText, { fontSize }]}>{item.name}</Text>
+		</Button>
+	);
+});
+
+const List = memo(observer(({ sections, isSearch = false, options = false, searchKey, onPress, prefix, height, ...other }) => {
+	const { fontSize } = useContext(CTX_THEME);
+	const listRef = useRef(null);
+	const keyObj = useRef({});
+	const { active } = useContext(CtxList);
+	// 按照官方优化建议，renderItem不要是匿名方法，减少渲染成本
+	const renderItem = useRef(({ item, section, index }) => {
+		return options && section.key === '__options' ?
+			<ListOpsItem
+				item={item}
+			/>
+			:
+			<ListItem
+				isSearch={isSearch}
+				item={item}
+				searchKey={searchKey}
+				onPress={onPress ?? (() => { })}
+				prefix={prefix}
+				index={index}
+			/>;
+	});
+	useEffect(() => {
+		keyObj.current = {};
+		Object.keys(sections).map((item, index) => {
+			keyObj.current[sections[item].key] = index;
+		});
+	}, [sections]);
+	useEffect(() => {
+		const index = keyObj.current[active];
+		if (index !== undefined) {
+			listRef.current.scrollToLocation({
+				itemIndex: 0,
+				sectionIndex: index,
+				animated: false,
+			});
+		}
+	}, [active]);
+	return (
+		<KeyboardAvoidingView style={styles.wrap}>
+			<SectionList
+				style={styles.list}
+				ref={listRef}
+				// 拖拽视图隐藏键盘
+				keyboardDismissMode='on-drag'
+				// 点击列表后隐藏软键盘
+				keyboardShouldPersistTaps='handled'
+				renderItem={renderItem.current}
+				renderSectionHeader={({ section }) => <ListItemHead section={section} />}
+				ItemSeparatorComponent={() => <View style={styles.border}></View>}
+				initialNumToRender={20}
+				getItemLayout={(data, index) => {
+					// 必须，否则scrollToLocation滚动到位于外部渲染区的位置会报错
+					return {length: 60, offset: 1 * index, index};
 				}}
-				underlayColor='#d9d9d9'
-			>
-				<View style={styles.box}>
-					{this.renderSearch(this.props.item.name, { style: [styles.item, { fontSize: style.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)}
-					{this.props.isSearch ?
-						this.renderSearch(this.props.item.account, { style: [styles.account, { fontSize: style.baseFontSize }], numberOfLines: 1 }, this.props.searchKey)
-						: null
-					}
-					{/* <Feather
-						name='chevron-right'
-						style={[styles.icon, {fontSize: style.baseFontSize}]}
-					/> */}
-				</View>
-			</TouchableHighlight>
-		);
-	}
-}
+				// ref='sectionList'
+				keyExtractor={(item, index) => {
+					return index.toString();
+				}}
+				sections={sections}
+				// 顶部粘连
+				stickySectionHeadersEnabled={true}
+				ListFooterComponent={() => {
+					return (
+						sections.length ?
+							<View style={styles.bottomPad}>
+								<Text
+									style={[styles.bottomPadText, { fontSize: fontSize * .9 }]}
+								>我是有底线的</Text>
+								<View
+									style={styles.bottomPadBorder}
+								></View>
+							</View>
+							: null
+					);
+				}}
+				{...other}
+			></SectionList>
+			{
+				sections.length ?
+					<>
+						<ListScrollView options={options} height={height} />
+						<ListModalCenter />
+					</>
+					: null
+			}
+		</KeyboardAvoidingView>
+	);
+}));
 
-class ListItemHead extends Component {
-	render() {
-		return (
-			<View style={styles.headBox}>
-				{this.props.section.key == 'like' ?
-					<FontAwesome
-						style={[styles.headItem, { fontSize: style.baseFontSize * .7 }]}
-						name='star'
-					/>
-					:
-					<Text style={[styles.headItem, { fontSize: style.baseFontSize * .7 }]}>{this.props.section.key}</Text>
-				}
-			</View>
-		);
-	}
-}
-
-export default class List extends Component {
-	constructor(props) {
-		super(props);
-		let _winHeight = Dimensions.get('window').height;
-		this.state = {
-			layoutHeight: Dimensions.get('window').height - 56 - 20,
-			catchShu: null,
-			catchHeng: null,
-			_winHeight,
-		};
-	}
-	offsetArray = [];
-	scrollTo(index = 0) {
-		this.refs.sectionList.scrollToLocation({
-			itemIndex: 0,
-			sectionIndex: index,
-			viewOffset: this.offsetArray[index],
-			animated: false,
-		});
-	}
-	findArrIndex(val, arr) {
-		for (let i = 0, max = arr.length; i < max; i++) {
-			if (val == arr[i]) {
-				return i;
-			}
-		}
-		return null;
-	}
-	getNowIndex(index) {
-		let _index = this.findArrIndex(index, this.ListArr);
-		_index != null && this.scrollTo(_index);
-	}
-	componentDidUpdate() {
-		this.mathOffsetArray();
-	}
-	mathOffsetArray() {
-		this.offsetArray = [];
-		this.ListArr = [];
-		Object.keys(this.props.sections).map((item) => {
-			this.ListArr[item] = this.props.sections[item].key;
-			if (item == 0) {
-				this.offsetArray.push(60);
-			} else if (item == 1) {
-				this.offsetArray.push(130 - (this.props.sections[item - 1].data.length * 10));
-			} else {
-				let _length = this.props.sections[item - 1].data.length;
-				this.offsetArray.push(this.offsetArray[item - 1] + 77 - (_length * (9 + _length * .1)));
-			}
-		});
-	}
-	componentDidMount() {
-		this.mathOffsetArray();
-	}
-	// mathHeight(e) {
-	// 	let winHeight = Dimensions.get('window').height;
-	// 	let winWidth = Dimensions.get('window').width;
-	// 	if(this.state.catchShu && this.state.catchHeng){
-	// 		// console.log('有横有竖');
-	// 		if(this.state._winHeight != winHeight){
-	// 			this.setState({
-	// 				layoutHeight: winHeight > winWidth? this.state.catchShu : this.state.catchHeng,
-	// 				_winHeight: winHeight,
-	// 			});
-	// 		}
-	// 	}else if(this.state.catchShu){
-	// 		// console.log('有竖');
-	// 		if(e.nativeEvent.layout.height != this.state.catchShu){
-	// 			this.setState({
-	// 				catchHeng: e.nativeEvent.layout.height,
-	// 				layoutHeight: e.nativeEvent.layout.height,
-	// 				_winHeight: winHeight,
-	// 			});
-	// 		}
-	// 	}else if(this.state.catchHeng){
-	// 		// console.log('有横');
-	// 		if(this.state._winHeight != winHeight && e.nativeEvent.layout.height == this.state.catchHeng){
-	// 			this.setState({
-	// 				layoutHeight: winHeight,
-	// 			});
-	// 		}else{
-	// 			if(e.nativeEvent.layout.height != this.state.catchHeng && e.nativeEvent.layout.height != winHeight){
-	// 				this.setState({
-	// 					layoutHeight: e.nativeEvent.layout.height,
-	// 					catchShu: e.nativeEvent.layout.height,
-	// 				});
-	// 			}
-	// 		}
-	// 	}else{
-	// 		//首次竖屏加载
-	// 		if(winHeight > winWidth && e.nativeEvent.layout.height != winHeight){
-	// 			let height = e.nativeEvent.layout.height;
-	// 			this.setState({
-	// 				catchShu: height,
-	// 				layoutHeight: height,
-	// 				_winHeight: winHeight,
-	// 			});
-	// 		}
-	// 		//首次横屏加载
-	// 		if(winHeight < winWidth && e.nativeEvent.layout.height != winHeight){
-	// 			let height = e.nativeEvent.layout.height;
-	// 			this.setState({
-	// 				catchHeng: height,
-	// 				layoutHeight: height,
-	// 				_winHeight: winHeight,
-	// 			});
-	// 		}
-	// 	};
-	// 	this.overMath = true;
-	// }
-	Listempty() {
-		if (!!this.props.isSearch) {
-			if (this.props.isSearchEmpty) {
-				return (
-					<View style={styles.searchEmptyBox}>
-						<Text style={[styles.searchEmptyTxt, { fontSize: style.baseFontSize }]}>搜索不到相关结果</Text>
-					</View>
-				);
-			} else {
-				return (
-					<View style={styles.searchEmptyBox}>
-						<Text style={[styles.searchEmptyTxt, { fontSize: style.baseFontSize }]}>搜索关键词可以是名称或账号</Text>
-					</View>
-				);
-			}
-		} else {
-			return (
-				<View style={[styles.emptyBox, { height: this.state.layoutHeight }]}>
-					<Text style={[styles.emptyYan, { fontSize: style.baseFontSize * .9 }]}>(｡・`ω´･)</Text>
-					<Text style={[styles.emptyTxt, { fontSize: style.baseFontSize * 1.2 }]}>万事皆空</Text>
-				</View>
-			);
-		}
-	}
-	render() {
-		return (
-			<View
-				style={style.absoluteBox}
-			>
-				<SectionList
-					style={styles.list}
-					keyboardDismissMode='on-drag'
-					keyboardShouldPersistTaps='handled'
-					renderItem={({ item, index }) => {
-						return <ListItem
-							item={item}
-							index={index}
-							navigation={this.props.navigation}
-							callSetBtn={this.props.callSetBtn}
-							isSearch={!!this.props.isSearch}
-							searchKey={this.props.searchKey}
-							baseFontSize={style.baseFontSize}
-						/>
-					}}
-					renderSectionHeader={({ section }) => <ListItemHead section={section} baseFontSize={style.baseFontSize} />}
-					ItemSeparatorComponent={() => <View style={styles.border}></View>}
-					ListEmptyComponent={this.Listempty.bind(this)}
-					initialNumToRender={50}
-					ref='sectionList'
-					keyExtractor={(item, index) => {
-						return index.toString();
-					}}
-					//-20以后在首次添加账号时会出现高度错乱的bug 但-20目前效果很好 所以暂时不修复
-					// onLayout={this.mathHeight.bind(this)}
-					sections={this.props.sections}
-					stickySectionHeadersEnabled={true}
-					getItemLayout={(data, index) => {
-						//此偏移量与侧边定位有关联 慎改
-						return ({
-							length: 50,
-							offset: (50 + 1) * index,
-							index,
-						});
-					}}
-					ListFooterComponent={() => {
-						return (
-							this.props.sections.length ?
-								<View style={styles.bottomPad}>
-									<Text
-										style={[styles.bottomPadText, { fontSize: style.baseFontSize * .9 }]}
-									>我是有底线的</Text>
-									<View
-										style={styles.bottomPadBorder}
-									></View>
-								</View>
-								: null
-						);
-					}}
-				></SectionList>
-				{
-					this.props.sections.length ?
-						<ListScrollFather
-							getNowIndex={this.getNowIndex.bind(this)}
-							appHeight={this.state.layoutHeight}
-						/>
-						: null
-				}
-			</View>
-		);
-	}
-}
+export default props => {
+	return (
+		<ListContext>
+			<List {...props} />
+		</ListContext>
+	);
+};
 
 const styles = StyleSheet.create({
-	box: {
+	wrap: {
+		flex: 1,
+	},
+	itemWrap: {
 		flexDirection: 'row',
-		// justifyContent: 'space-around',
 		height: 60,
 		backgroundColor: '#fff',
 	},
-	item: {
-		textAlignVertical: 'center',
-		// borderWidth: 1,
-		width: 120,
-		paddingLeft: 15,
+	itemOpsText: {
 		color: '#353535',
 	},
-	account: {
+	itemOpsWrap: {
+		alignItems: 'center',
+		flex: 1,
+		paddingHorizontal: 15,
+	},
+	itemName: {
+		textAlignVertical: 'center',
+		flex: 1,
+		minWidth: 120,
+		paddingLeft: 15,
+		paddingRight: 25,
+		color: '#353535',
+	},
+	itemNameInSearch: {
+		flex: 0,
+		width: '40%',
+	},
+	itemAccount: {
 		textAlignVertical: 'center',
 		color: '#666',
 		paddingHorizontal: 20,
-		width: 200,
+		width: '55%',
 	},
-	// icon: {
-	// 	textAlignVertical: 'center',
-	// 	paddingRight: 25,
-	// 	paddingLeft: 10,
-	// 	color: '#ccc',
-	// },
 	headBox: {
 		backgroundColor: '#ebebeb',
 	},
@@ -362,34 +243,12 @@ const styles = StyleSheet.create({
 	},
 	list: {
 		backgroundColor: '#ebebeb',
+		flex: 1,
 	},
 	border: {
 		marginHorizontal: 10,
 		height: 1,
 		backgroundColor: '#eee',
-	},
-	emptyBox: {
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		flex: 1,
-	},
-	searchEmptyBox: {
-		alignItems: 'center',
-	},
-	searchEmptyTxt: {
-		marginTop: 15,
-		marginHorizontal: 20,
-		color: '#999',
-	},
-	emptyYan: {
-		color: '#333',
-		marginBottom: 10,
-		marginHorizontal: 10,
-	},
-	emptyTxt: {
-		color: '#333',
-		marginHorizontal: 10,
 	},
 	bottomPad: {
 		alignItems: 'center',

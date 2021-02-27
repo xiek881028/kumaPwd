@@ -1,7 +1,7 @@
 /*
 !/src
-/src/assets/appCommonFn.js
-!/photoShop_images
+/src/helper/crypto.js
+/photoShop_images
 !app.json
 !index.js
 !package.json
@@ -14,5 +14,5 @@
 !/android/gradle.properties.sample
 /android/app/*
 !/android/app/src
+/android/app/src/debug
 !/android/app/build.gradle
-!/android/app/proguard-rules.pro

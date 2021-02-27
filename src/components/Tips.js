@@ -1,84 +1,84 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, memo, useContext } from 'react';
 import {
 	StyleSheet,
 	View,
 	Text,
 } from 'react-native';
-
-//Css
+import { observer } from 'mobx-react';
 import style from '../css/common.js';
 
-export default class Tips extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isShow: false,
-		};
-	}
-	componentWillMount() {
-		this.props.isShow && this.showModal(this.props.text, this.props.timer);
-	}
-	componentWillReceiveProps(props) {
-		props.isShow && this.showModal(props.text, props.timer);
-		if (props.clear) {
-			this.setState({
-				isShow: false,
-				text: '',
-			});
-			this.props.callState && this.props.callState(true);
-		};
-	}
-	componentWillUnmount() {
-		clearTimeout(this.timeout);
-	}
-	showModal(text = '', timer = 1500) {
-		clearTimeout(this.timeout);
-		this.setState({
-			isShow: true,
-			text,
-		});
-		this.timeout = setTimeout(() => {
-			this.setState({
-				isShow: false,
-				text: '',
-			});
-			this.props.callState && this.props.callState(true);
+export default memo(observer(props => {
+	const { fontSize } = useContext(CTX_THEME);
+	const { timer, text, cb, setTipsFn, isShow: pIsShow } = useContext(CTX_TIPS);
+	const [isShow, setIsShow] = useState(null);
+	let time;
+	// 同时设置多个属性时，保证只有一个计时器
+	useEffect(() => {
+		clearTimeout(time);
+		if (!isShow) return;
+		time = setTimeout(() => {
+			setIsShow(false);
+			setTipsFn('text', '');
+			(cb ?? (() => { }))();
 		}, timer);
-	}
-	render() {
-		return this.state.isShow ? (
+		return () => {
+			clearTimeout(time);
+		};
+	}, [isShow, timer, text]);
+	// tips隐藏，重置父级设置，防止其他组件调用时，配置混乱
+	useEffect(() => {
+		if (!isShow && isShow !== null) {
+			setTipsFn('isShow', undefined);
+			setTipsFn('cb', undefined);
+			setTipsFn('timer', 2500);
+			setTipsFn('text', '');
+		};
+	}, [isShow]);
+	useEffect(() => {
+		setIsShow(!!text);
+	}, [text]);
+	// 父级isShow传递给组件控制
+	useEffect(() => {
+		// 防止 pIsShow 没有传，由false 变成 undefined 触发更新
+		if (!pIsShow !== !isShow) {
+			setIsShow(pIsShow);
+		}
+	}, [pIsShow]);
+	return isShow ? (
+		<View
+			pointerEvents="none"
+			style={[styles.tipsModalWrap, { bottom: 30 }]}
+		>
 			<View
-				style={[styles.copyModal, { bottom: this.props.bottom ? this.props.bottom : 30}]}
+				style={[styles.tipsModal]}
 			>
-				<View>
-					<Text
-						style={[styles.copyModalText, { fontSize: style.baseFontSize * .9 }]}
-					>{this.state.text}</Text>
-					<View style={[style.absoluteBox, styles.copyModalBg]}></View>
-				</View>
+				<Text
+					style={[styles.tipsModalText, { fontSize: fontSize * .9 }]}
+				>{text}</Text>
 			</View>
-		)
-		: null;
-	}
-}
+		</View>
+	) : null;
+}));
 
 const styles = StyleSheet.create({
-	copyModal: {
+	tipsModalWrap: {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 		position: 'absolute',
 		top: 0,
 		left: 0,
 		right: 0,
+		zIndex: 99999,
 	},
-	copyModalText: {
+	tipsModal: {
+		marginHorizontal: 20,
+		backgroundColor: 'rgba(53, 53, 53, .85)',
+		borderRadius: 30,
+	},
+	tipsModalText: {
 		paddingVertical: 10,
 		paddingHorizontal: 30,
 		color: '#fff',
 		zIndex: 2,
-	},
-	copyModalBg: {
-		backgroundColor: 'rgba(53, 53, 53, .85)',
-		borderRadius: 30,
 	},
 });

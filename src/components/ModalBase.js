@@ -1,57 +1,48 @@
-import React, { Component } from 'react';
+import React, { memo, forwardRef } from 'react';
 import {
 	StyleSheet,
 	Modal,
 	View,
 	TouchableWithoutFeedback,
+	StatusBar,
 } from 'react-native';
 
-export default class ModalBase extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			modalIsShow: props.visible,
-		};
-	}
-	setModal = (bool = false, cb=()=>{})=>{
-		this.setState({ modalIsShow: !!bool }, cb());
-		!bool && this.props.cloesModal && this.props.cloesModal();
-	}
-	render() {
-		return (
-			<Modal
-				animationType='none'
-				onRequestClose={()=>{
-					this.setModal(false);
-				}}
-				// transparent={true}
-				visible={this.state.modalIsShow}
+export default memo(forwardRef(({ visible, onClose, children }, ref) => {
+	return (
+		<Modal
+			animationType='none'
+			transparent={true}
+			ref={ref}
+			onRequestClose={() => {
+				(onClose ?? (() => { }))(false);
+			}}
+			visible={visible}
+		>
+			<StatusBar backgroundColor="rgba(0, 0, 0, .5)" />
+			<View
+				style={[styles.baseModalContent]}
 			>
-				<View
-					style={[styles.baseModalContent]}
-				>
-					<TouchableWithoutFeedback
-						onPress={()=>{
-							this.props.emptyClose != false && this.setModal(false);
-						}}
-					>
-						<View style={{flex:1}}></View>
-					</TouchableWithoutFeedback>
-					{this.props.children}
-				</View>
 				<TouchableWithoutFeedback
-					onPress={()=>{
-						this.props.emptyClose != false && this.setModal(false);
+					onPress={() => {
+						(onClose ?? (() => { }))(false);
 					}}
 				>
-					<View
-						style={[styles.baseModalBg]}
-					></View>
+					<View style={{ flex: 1 }}></View>
 				</TouchableWithoutFeedback>
-			</Modal>
-		);
-	}
-}
+				{children}
+			</View>
+			<TouchableWithoutFeedback
+				onPress={() => {
+					(onClose ?? (() => { }))(false);
+				}}
+			>
+				<View
+					style={[styles.baseModalBg]}
+				></View>
+			</TouchableWithoutFeedback>
+		</Modal>
+	);
+}));
 
 const styles = StyleSheet.create({
 	baseModalBg: {
